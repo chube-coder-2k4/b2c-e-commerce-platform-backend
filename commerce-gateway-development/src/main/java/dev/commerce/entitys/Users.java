@@ -3,7 +3,6 @@ package dev.commerce.entitys;
 import dev.commerce.dtos.common.LoginType;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -15,19 +14,20 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User extends BaseEntity implements UserDetails {
+public class Users extends BaseEntity implements UserDetails {
     @Id
     @Column(name = "id", updatable = false, nullable = false, columnDefinition = "uuid")
     private UUID id;
-    private String firstName;
-    private String lastName;
+    private String fullName;
     private String email;
     private String password;
     private String phone;
     private boolean isVerify;
     private boolean isActive;
     private boolean isLocked;
+    @Enumerated(EnumType.STRING)
     private LoginType provider;
+    private String address;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "user_roles",
