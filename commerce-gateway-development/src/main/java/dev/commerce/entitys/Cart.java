@@ -1,10 +1,8 @@
 package dev.commerce.entitys;
 
-import dev.commerce.dtos.common.TypeOTP;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -13,20 +11,16 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OtpVerify {
+public class Cart extends BaseEntity{
     @Id
     private UUID id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private Users usersId;
-    private String otp;
-    @Enumerated(EnumType.STRING)
-    private TypeOTP type;
-    private LocalDateTime expiredAt;
-    private boolean isUsed = false;
+    private Users users;
+    private double totalPrice;
 
     public void ensureId() {
-        if(this.id == null) {
+        if (this.id == null) {
             this.id = UUID.randomUUID();
         }
     }

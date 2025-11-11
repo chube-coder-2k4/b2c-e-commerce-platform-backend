@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @MappedSuperclass
 @Getter
@@ -20,7 +21,7 @@ public abstract class BaseEntity implements Serializable {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
     @CreatedBy
-    private int createdBy;
+    private UUID createdBy;
     @LastModifiedBy
-    private int updatedBy;
+    private UUID updatedBy;
 }

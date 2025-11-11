@@ -3,6 +3,7 @@ package dev.commerce.entitys;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -16,9 +17,9 @@ public class RefreshToken extends BaseEntity{
     private UUID id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User userId;
-    private String refreshToken;
-    private Long expDate;
+    private Users usersId;
+    private String token;
+    private LocalDateTime expDate;
 
     public void ensureId() {
         if (this.id == null) {
