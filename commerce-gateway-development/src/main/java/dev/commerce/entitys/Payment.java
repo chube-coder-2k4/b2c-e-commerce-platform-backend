@@ -22,6 +22,7 @@ public class Payment extends BaseEntity{
     private double amount;
     private String transactionId;
     private String status; // e.g., "COMPLETED", "PENDING", "
+    // set paidAt when status is "COMPLETED"
     private LocalDateTime paidAt;
 
     @PrePersist

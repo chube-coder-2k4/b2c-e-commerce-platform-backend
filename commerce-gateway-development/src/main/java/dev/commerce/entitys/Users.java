@@ -22,14 +22,14 @@ public class Users extends BaseEntity implements UserDetails {
     private String email;
     private String password;
     private String phone;
-    private boolean isVerify;
-    private boolean isActive;
-    private boolean isLocked;
+    private boolean isVerify = false;
+    private boolean isActive = true;
+    private boolean isLocked = false;
     @Enumerated(EnumType.STRING)
     private LoginType provider;
     private String address;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -44,36 +44,40 @@ public class Users extends BaseEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        List<GrantedAuthority> grandAuthorities = new ArrayList<>();
+        for( Role role : roles){
+            grandAuthorities.add(()-> "ROLE_"+role.getName());
+        }
+        return grandAuthorities;
     }
 
     @Override
     public String getPassword() {
-        return "";
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return "";
+        return email;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
+        return !isLocked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return isActive;
     }
 }
