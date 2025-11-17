@@ -31,3 +31,8 @@ management:
       base-path: /api/v1/actuator
       exposure:
         include: "health, info"
+
+cloudinary:
+  cloud-name: xxx
+  api-key: xxx
+  api-secret: xxx
