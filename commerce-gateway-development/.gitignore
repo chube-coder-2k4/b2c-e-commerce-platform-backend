@@ -33,6 +33,6 @@ build/
 .vscode/
 
 ### File ENV
-#.env
-#.env.local
-#.env.*.local
+.env
+.env.local
+.env.*.local
