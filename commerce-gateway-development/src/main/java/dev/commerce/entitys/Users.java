@@ -26,7 +26,7 @@ public class Users extends BaseEntity implements UserDetails {
     private boolean isActive = true;
     private boolean isLocked = false;
     @Enumerated(EnumType.STRING)
-    private LoginType provider;
+    private LoginType provider = LoginType.LOCAL;
     private String address;
 
     @ManyToMany(fetch = FetchType.LAZY)
