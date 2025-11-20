@@ -18,11 +18,10 @@ public class Payment extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
-    private String provider; // e.g., "PayPal", "Stripe"
+    private String provider;
     private double amount;
     private String transactionId;
-    private String status; // e.g., "COMPLETED", "PENDING", "
-    // set paidAt when status is "COMPLETED"
+    private String status;
     private LocalDateTime paidAt;
 
     @PrePersist

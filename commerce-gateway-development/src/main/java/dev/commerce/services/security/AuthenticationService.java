@@ -1,4 +1,4 @@
-package dev.commerce.services;
+package dev.commerce.services.security;
 
 public interface AuthenticationService {
 }

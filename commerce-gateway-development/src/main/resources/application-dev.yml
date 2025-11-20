@@ -1,10 +1,11 @@
 spring:
-  profiles:
-    active: dev
+  config:
+    activate:
+      on-profile: dev
   application:
     name: commerce-gateway-development
   datasource:
-    url: jdbc:postgresql://localhost:5432/CommerceGatewayDB
+    url: jdbc:postgresql://localhost:5432/${DB_NAME:commercegatewaydb}
     username: postgres
     password: 12345
     driver-class-name: org.postgresql.Driver
@@ -21,6 +22,10 @@ spring:
     baseline-on-migrate: true
     validate-on-migrate: true
     baseline-version: 1
+  data:
+    redis:
+      host: localhost
+      port: 6379
 management:
   endpoint:
     health:
@@ -30,3 +35,17 @@ management:
       base-path: /api/v1/actuator
       exposure:
         include: "health, info"
+cloudinary:
+  cloud-name: dfupyxrmr
+  api-key: 234171996373849
+  api-secret: 3EmG-cflOJbuIKmhxjPSR4vD6YI
+vnpay:
+  tmn-code: T5L6K6JN
+  hash-secret: HZJYFQKXJXKXWQYQWZ
+  url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+  api-url: https://sandbox.vnpayment.vn/merchant_webapi/api/transaction
+  return-url: http://localhost:8080/vnpay/return
+  ipn-url: http://localhost:8080/vnpay/ipn
+
+
+

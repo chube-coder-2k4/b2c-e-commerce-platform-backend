@@ -10,8 +10,6 @@ import java.util.List;
 
 @Configuration
 public class ApiConfig {
-    // class này chịu trách nhiệm cấu hình các bean liên quan đến API
-    // từ title version url , security , bearer token ...
     @Bean
     public OpenAPI customOpenAPI() {
         final String securitySchemeName = "bearerAuth";

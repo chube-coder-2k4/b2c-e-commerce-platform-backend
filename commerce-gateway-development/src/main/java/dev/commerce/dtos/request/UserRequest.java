@@ -7,7 +7,12 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LoginRequest {
+public class UserRequest {
+    private String fullName;
     private String email;
     private String password;
+    private String phone;
+    private String address;
+    private String roleName;
+    private String provider;
 }
