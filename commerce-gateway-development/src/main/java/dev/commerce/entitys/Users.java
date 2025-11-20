@@ -22,6 +22,7 @@ public class Users extends BaseEntity implements UserDetails {
     private String email;
     private String password;
     private String phone;
+    private String username;
     private boolean isVerify = false;
     private boolean isActive = true;
     private boolean isLocked = false;
@@ -29,7 +30,7 @@ public class Users extends BaseEntity implements UserDetails {
     private LoginType provider = LoginType.LOCAL;
     private String address;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -58,7 +59,7 @@ public class Users extends BaseEntity implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return username;
     }
 
     @Override

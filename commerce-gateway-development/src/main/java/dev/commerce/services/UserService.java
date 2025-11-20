@@ -17,10 +17,11 @@ public interface UserService {
 
     String confirmUser(String email, String verifyCode);
 
-    void deleteUser(long userId);
+    void deleteUser(UUID userId);
 
     Users findByEmail(String email);
 
     Users findById(UUID userId);
 
+    Users findByUsername(String username);
 }
