@@ -31,6 +31,10 @@ management:
       base-path: /api/v1/actuator
       exposure:
         include: "health, info"
+  data:
+    redis:
+      host: localhost
+      port: 6379
 cloudinary:
   cloud-name: dfupyxrmr
   api-key: 234171996373849
@@ -42,5 +46,6 @@ vnpay:
   api-url: https://sandbox.vnpayment.vn/merchant_webapi/api/transaction
   return-url: http://localhost:8080/vnpay/return
   ipn-url: http://localhost:8080/vnpay/ipn
+
 
 

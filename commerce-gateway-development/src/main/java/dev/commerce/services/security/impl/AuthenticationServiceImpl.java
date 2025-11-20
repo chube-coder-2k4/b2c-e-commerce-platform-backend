@@ -1,4 +1,8 @@
 package dev.commerce.services.security.impl;
 
-public class AuthenticationServiceImpl {
+import dev.commerce.services.security.AuthenticationService;
+import org.springframework.stereotype.Service;
+
+@Service
+public class AuthenticationServiceImpl implements AuthenticationService {
 }
