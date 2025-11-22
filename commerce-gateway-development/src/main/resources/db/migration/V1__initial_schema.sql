@@ -195,4 +195,3 @@ CREATE INDEX idx_payment_order ON payment(order_id);
 CREATE INDEX idx_payment_transaction ON payment(transaction_id);
 CREATE INDEX idx_audit_log_user ON audit_log(user_id);
 CREATE INDEX idx_refresh_token_user ON refresh_token(user_id);
-CREATE INDEX idx_otp_verify_user ON otp_verify(user_id);
