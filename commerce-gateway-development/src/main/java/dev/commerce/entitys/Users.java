@@ -4,6 +4,7 @@ import dev.commerce.dtos.common.LoginType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
@@ -45,11 +46,9 @@ public class Users extends BaseEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> grandAuthorities = new ArrayList<>();
-        for( Role role : roles){
-            grandAuthorities.add(()-> "ROLE_"+role.getName());
-        }
-        return grandAuthorities;
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+                .toList();
     }
 
     @Override

@@ -26,6 +26,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final OtpVerifyService otpVerifyService;
     private final MailService mailService;
+    private final RoleRepository roleRepository;
 
 
     @Override
@@ -36,10 +37,11 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByUsername(request.getEmail()).isPresent()) {
             throw new InvalidDataException("Username already exists");
         }
+        Set<Role> role = roleRepository.findByNameIn(request.getRole());
         Users user = Users.builder()
                 .fullName(request.getFullName())
                 .email(request.getEmail())
-                .username(request.getEmail())
+                .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .phone(request.getPhone())
                 .address(request.getAddress())
@@ -47,12 +49,10 @@ public class UserServiceImpl implements UserService {
                 .isVerify(false)
                 .isActive(true)
                 .isLocked(false)
-                .roles(request.getRole())
+                .roles(role)
                 .build();
         Users savedUser = userRepository.save(user);
-
-        // generate OTP
-        String otp = generateOtp();
+        String otp = otpVerifyService.generateOtp();
         otpVerifyService.saveOtp(request.getEmail(), otp);
         mailService.sendOtpMail(savedUser.getEmail(), otp);
 
@@ -90,10 +90,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(UUID userId) {
 
-    }
-
-    private String generateOtp() {
-        return String.valueOf((int)(Math.random() * 900000) + 100000);
     }
 
     @Override

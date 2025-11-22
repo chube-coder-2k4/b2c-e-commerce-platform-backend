@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository("refreshTokenRedisRepository")
-public interface RefreshTokenRedisRepository extends CrudRepository<RefreshToken, UUID> {
+public interface RefreshTokenRedisRepository extends CrudRepository<RefreshToken, String> {
 
     void deleteByUsersId(UUID userId);
 

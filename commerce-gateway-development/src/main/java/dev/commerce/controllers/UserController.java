@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +38,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Invalid input data or email already exists"),
             @ApiResponse(responseCode = "404", description = "Role not found")
     })
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> addUser(@Valid @RequestBody UserRequest request) 
             throws MessagingException, UnsupportedEncodingException {
