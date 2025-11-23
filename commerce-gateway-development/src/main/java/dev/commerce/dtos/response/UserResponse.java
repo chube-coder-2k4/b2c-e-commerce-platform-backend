@@ -25,5 +25,7 @@ public class UserResponse {
     private boolean isLocked;
     private LoginType provider;
     private Set<Role> roles;
+    private UUID createdBy;
+    private UUID updatedBy;
 
 }

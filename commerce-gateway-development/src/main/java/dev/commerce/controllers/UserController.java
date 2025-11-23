@@ -5,7 +5,9 @@ import dev.commerce.dtos.request.UserRequest;
 import dev.commerce.dtos.request.UserUpdateRequest;
 import dev.commerce.dtos.response.UserResponse;
 import dev.commerce.entitys.Users;
+import dev.commerce.mappers.UsersMapper;
 import dev.commerce.services.UserService;
+import dev.commerce.utils.AuthenticationUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -33,6 +35,8 @@ import java.util.UUID;
 @Validated
 public class UserController {
     private final UserService userService;
+    private final AuthenticationUtils utils;
+    private final UsersMapper usersMapper;
 
     @Operation(summary = "Create new user", description = "Register a new user account with email verification")
     @ApiResponses(value = {
@@ -88,5 +92,30 @@ public class UserController {
         return ResponseEntity.ok("User deleted successfully");
     }
 
+    @Operation(summary = "Get me", description = "Retrieve current authenticated user information")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized access")
+    })
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getCurrentUser() {
+        UUID userId = utils.getCurrentUserId();
+        Users user = userService.findById(userId);
+        UserResponse response = usersMapper.toDto(user);
+        return ResponseEntity.ok(response);
+    }
 
+    @Operation(summary = "Get user by ID", description = "Retrieve user information by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> getUserById(@PathVariable UUID id) {
+        Users user = userService.findById(id);
+        UserResponse response = usersMapper.toDto(user);
+        return ResponseEntity.ok(response);
+
+    }
 }

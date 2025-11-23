@@ -8,11 +8,13 @@ import dev.commerce.dtos.response.UserResponse;
 import dev.commerce.entitys.Role;
 import dev.commerce.entitys.Users;
 import dev.commerce.exception.InvalidDataException;
+import dev.commerce.mappers.UsersMapper;
 import dev.commerce.repositories.jpa.RoleRepository;
 import dev.commerce.repositories.jpa.UserRepository;
 import dev.commerce.services.MailService;
 import dev.commerce.services.OtpVerifyService;
 import dev.commerce.services.UserService;
+import dev.commerce.utils.AuthenticationUtils;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +41,8 @@ public class UserServiceImpl implements UserService {
     private final OtpVerifyService otpVerifyService;
     private final MailService mailService;
     private final RoleRepository roleRepository;
+    private final AuthenticationUtils utils;
+    private final UsersMapper usersMapper;
 
 
     @Override
@@ -51,19 +55,9 @@ public class UserServiceImpl implements UserService {
             throw new InvalidDataException("Username already exists");
         }
         Set<Role> role = roleRepository.findByNameIn(request.getRole());
-        Users user = Users.builder()
-                .fullName(request.getFullName())
-                .email(request.getEmail())
-                .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .phone(request.getPhone())
-                .address(request.getAddress())
-                .provider(LoginType.LOCAL)
-                .isVerify(false)
-                .isActive(true)
-                .isLocked(false)
-                .roles(role)
-                .build();
+        Users user = usersMapper.toEntity(request);
+        user.setRoles(role);
+        user.setCreatedBy(utils.getCurrentUserId());
         Users savedUser = userRepository.save(user);
         String otp = otpVerifyService.generateOtp();
         otpVerifyService.saveOtp(request.getEmail(), otp);
@@ -85,6 +79,7 @@ public class UserServiceImpl implements UserService {
         }
         user.setPhone(request.getPhone());
         user.setAddress(request.getAddress());
+        user.setUpdatedBy(utils.getCurrentUserId());
         userRepository.save(user);
         log.info("User updated successfully with ID: {}", user.getId());
         return user.getId();
