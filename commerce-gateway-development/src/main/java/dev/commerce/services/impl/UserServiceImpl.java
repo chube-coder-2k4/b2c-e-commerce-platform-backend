@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -58,6 +57,7 @@ public class UserServiceImpl implements UserService {
         Users user = usersMapper.toEntity(request);
         user.setRoles(role);
         user.setCreatedBy(utils.getCurrentUserId());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         Users savedUser = userRepository.save(user);
         String otp = otpVerifyService.generateOtp();
         otpVerifyService.saveOtp(request.getEmail(), otp);
@@ -85,18 +85,6 @@ public class UserServiceImpl implements UserService {
         return user.getId();
     }
 
-    @Override
-    public String confirmUser(String email, String verifyCode) {
-        Users user = userRepository.findByEmail(email).orElseThrow(()-> new RuntimeException("User not found"));
-        if(user == null) {
-            throw new RuntimeException("User not found");
-        }
-        if(user.isVerify()) {
-            return "User already verified";
-        }
-        log.info("Confirming user with email: {}", email);
-        return null;
-    }
 
     @Override
     public void deleteUser(UUID userId) {

@@ -1,6 +1,5 @@
 package dev.commerce.entitys;
 
-import dev.commerce.dtos.common.RoleName;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.UUID;
@@ -15,8 +14,8 @@ public class Role extends BaseEntity {
     @Id
     @Column(name = "id", nullable = false, updatable = false, columnDefinition = "uuid")
     private UUID id;
-    @Enumerated(EnumType.STRING)
-    private RoleName name;
+    private String name;
+    private String description;
 
 
     @PrePersist

@@ -44,7 +44,6 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Invalid input data or email already exists"),
             @ApiResponse(responseCode = "404", description = "Role not found")
     })
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> addUser(@Valid @RequestBody UserRequest request) 
             throws MessagingException, UnsupportedEncodingException {

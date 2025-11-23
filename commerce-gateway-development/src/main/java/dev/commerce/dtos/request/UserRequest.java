@@ -1,7 +1,5 @@
 package dev.commerce.dtos.request;
 
-import dev.commerce.dtos.common.RoleName;
-import dev.commerce.entitys.Role;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -20,7 +18,7 @@ public class UserRequest {
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be valid")
     private String email;
-    
+
     @NotBlank(message = "Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
@@ -34,7 +32,7 @@ public class UserRequest {
     private String provider; // Default: LOCAL if not provided
 
     @NotEmpty(message = "At least one role must be assigned")
-    private Set<RoleName> role;
+    private Set<String> role;
 
     @NotBlank(message = "Username is required")
     private String username;

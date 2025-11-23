@@ -24,6 +24,7 @@ CREATE TABLE users (
 CREATE TABLE role (
                       id UUID PRIMARY KEY,
                       name VARCHAR(100) NOT NULL UNIQUE,
+                      description TEXT,
                       created_at TIMESTAMP NOT NULL,
                       updated_at TIMESTAMP NOT NULL,
                       created_by UUID,

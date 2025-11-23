@@ -10,10 +10,13 @@ import org.mapstruct.Mapping;
 public interface UsersMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "provider", expression = "java(userRequest.getProvider() != null ? LoginType.valueOf(userRequest.getProvider()) : LoginType.LOCAL)")
+    @Mapping(target = "provider", expression = "java(userRequest.getProvider() != null ? dev.commerce.dtos.common.LoginType.valueOf(userRequest.getProvider()) : dev.commerce.dtos.common.LoginType.LOCAL)")
     @Mapping(target = "roles", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "updatedBy", ignore = true)
-    Users toEntity(UserRequest dto);
+    @Mapping(target = "isVerify", constant = "false")
+    @Mapping(target = "isActive", constant = "true")
+    @Mapping(target = "isLocked", constant = "false")
+    @Mapping(target = "password", ignore = true)
+    Users toEntity(UserRequest userRequest);
+
     UserResponse toDto(Users entity);
 }

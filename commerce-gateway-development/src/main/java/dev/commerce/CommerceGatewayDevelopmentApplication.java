@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "dev.commerce")
 @EnableScheduling
 @EnableMethodSecurity // enable @PreAuthorize annotation
 public class CommerceGatewayDevelopmentApplication {

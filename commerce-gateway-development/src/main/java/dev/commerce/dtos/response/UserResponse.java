@@ -1,7 +1,6 @@
 package dev.commerce.dtos.response;
 
 import dev.commerce.dtos.common.LoginType;
-import dev.commerce.dtos.common.RoleName;
 import dev.commerce.entitys.Role;
 import lombok.*;
 
