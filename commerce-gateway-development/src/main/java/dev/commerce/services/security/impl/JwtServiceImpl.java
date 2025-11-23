@@ -1,6 +1,7 @@
 package dev.commerce.services.security.impl;
 
 import dev.commerce.dtos.common.TokenType;
+import dev.commerce.entitys.Users;
 import dev.commerce.services.security.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -13,10 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -102,9 +100,14 @@ public class JwtServiceImpl implements JwtService {
     private Map<String, Object> buildClaims(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", userDetails.getAuthorities()
+
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList());
+        claims.put("username", userDetails.getUsername());
+        if(userDetails instanceof Users user){
+            claims.put("userId", user.getId().toString());
+        }
         return claims;
     }
 
@@ -130,6 +133,14 @@ public class JwtServiceImpl implements JwtService {
             return List.of();
         }
     }
+
+    @Override
+    public UUID extractUserId(String token, TokenType tokenType) {
+        Claims claims = extractAllClaims(token, tokenType);
+        String userIdStr = claims.get("userId", String.class);
+        return userIdStr != null ? UUID.fromString(userIdStr) : null;
+    }
+
 
 
 }
