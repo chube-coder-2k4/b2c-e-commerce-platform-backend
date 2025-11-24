@@ -26,6 +26,7 @@ public class Product extends BaseEntity{
     private Category category;
     private boolean isActive = true;
 
+    @PrePersist
     public void ensureId() {
         if(id == null) this.id = UUID.randomUUID();
     }
