@@ -33,7 +33,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "200", description = "Categories retrieved successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request parameters")
     })
-    @GetMapping("/list")
+    @PostMapping("/list")
     public ResponseEntity<Page<CategoryResponse>> getAllCategories(
             @RequestParam(required = false) String name,
             @RequestParam(defaultValue = "0") int page,

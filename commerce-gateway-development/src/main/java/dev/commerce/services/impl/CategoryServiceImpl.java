@@ -57,6 +57,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponse createCategory(CategoryRequest request) {
         Category cate = categoryMapper.dtoToEntity(request);
         cate.setCreatedBy(utils.getCurrentUserId());
+        cate.setActive(true);
         Category savedCate = categoryRepository.save(cate);
         return categoryMapper.entityToDto(savedCate);
     }

@@ -59,6 +59,7 @@ CREATE TABLE category (
                           id UUID PRIMARY KEY,
                           name VARCHAR(255) NOT NULL,
                           slug VARCHAR(255) NOT NULL UNIQUE,
+                          is_active BOOLEAN DEFAULT true,
                           created_at TIMESTAMP NOT NULL,
                           updated_at TIMESTAMP NOT NULL,
                           created_by UUID,

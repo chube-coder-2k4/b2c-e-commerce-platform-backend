@@ -6,6 +6,9 @@ import lombok.*;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserUpdateRequest {
     @NotBlank(message = "Full name is required")
     private String fullName;

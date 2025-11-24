@@ -18,7 +18,7 @@ public class Cart extends BaseEntity{
     @JoinColumn(name = "user_id")
     private Users users;
     private double totalPrice;
-
+    @PrePersist
     public void ensureId() {
         if (this.id == null) {
             this.id = UUID.randomUUID();

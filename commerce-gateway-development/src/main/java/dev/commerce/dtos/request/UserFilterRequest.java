@@ -1,10 +1,14 @@
 package dev.commerce.dtos.request;
 
-import lombok.Data;
+import lombok.*;
 
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserFilterRequest {
     private String fullName;
     private String email;

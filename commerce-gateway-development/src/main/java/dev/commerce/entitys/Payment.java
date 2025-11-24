@@ -22,6 +22,7 @@ public class Payment extends BaseEntity{
     private String provider;
     private double amount;
     private String transactionId;
+    @Enumerated(EnumType.STRING)
     private PaymentStatus status;
     private LocalDateTime paidAt;
 

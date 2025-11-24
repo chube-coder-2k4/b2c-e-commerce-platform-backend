@@ -22,7 +22,7 @@ public class RefreshToken extends BaseEntity{
 
     private String token;
     private LocalDateTime expDate;
-
+    @PrePersist
     public void ensureId() {
         if (this.id == null) {
             this.id = UUID.randomUUID();

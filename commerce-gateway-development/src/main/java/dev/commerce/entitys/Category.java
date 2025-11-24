@@ -1,5 +1,6 @@
 package dev.commerce.entitys;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
@@ -18,6 +19,7 @@ public class Category extends BaseEntity{
     private UUID id;
     private String name;
     private String slug;
+    @Column(name = "is_active")
     private boolean isActive = true;
 
     @PrePersist
