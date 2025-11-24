@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private final OtpVerifyService otpVerifyService;
-    private final UserService userService;
 
     @Operation(summary = "User login", description = "Authenticate user and return access token and refresh token")
     @ApiResponses(value = {

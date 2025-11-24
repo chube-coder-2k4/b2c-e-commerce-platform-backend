@@ -19,5 +19,5 @@ public class OtpVerify {
     private UUID userId;
     private String otp;
     private TypeOTP type;
-    private boolean used = false;
+
 }

@@ -1,5 +1,6 @@
 package dev.commerce.entitys;
 
+import dev.commerce.dtos.common.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,7 +22,7 @@ public class Payment extends BaseEntity{
     private String provider;
     private double amount;
     private String transactionId;
-    private String status;
+    private PaymentStatus status;
     private LocalDateTime paidAt;
 
     @PrePersist
