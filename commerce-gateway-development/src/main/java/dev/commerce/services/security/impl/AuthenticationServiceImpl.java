@@ -13,6 +13,7 @@ import dev.commerce.repositories.jpa.UserRepository;
 import dev.commerce.services.RefreshTokenService;
 import dev.commerce.services.security.AuthenticationService;
 import dev.commerce.services.security.JwtService;
+import dev.commerce.utils.AuthenticationUtils;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtService jwtService;
     private final RefreshTokenService tokenService;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationUtils utils;
 
 
     @Override
@@ -61,12 +63,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public LoginResponse refreshToken(HttpServletRequest request) {
         String token = getRefreshToken(request);
-        final String username = jwtService.extractUsername(token, TokenType.REFRESH);
-        var user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found"));
-        if (!jwtService.isTokenValid(token, user, TokenType.REFRESH)) {
-            throw new InvalidDataException("Invalid refresh token");
-
-        }
+        var user = getUserFromRefreshToken(token);
+        validateRefreshToken(token, user);
         String accessToken = jwtService.generateAccessToken(user);
         return LoginResponse.builder()
                 .accessToken(accessToken)
@@ -78,11 +76,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public String logout(HttpServletRequest request) {
         String refresh = getRefreshToken(request);
-        final String username = jwtService.extractUsername(refresh, TokenType.REFRESH);
-        var user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found"));
-        if (!jwtService.isTokenValid(refresh, user, TokenType.REFRESH)) {
-            throw new InvalidDataException("Invalid refresh token");
-        }
+        var user = getUserFromRefreshToken(refresh);
+        validateRefreshToken(refresh, user);
         tokenService.deleteByUserId(user.getId());
         return "Logout successful";
     }
@@ -93,31 +88,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if(!user.isEnabled()) {
             throw new InvalidDataException("User account is not activated");
         }
-        
-        // Generate reset password token
+
         String resetToken = jwtService.generateResetPasswordToken(user);
         
-        // Save reset token to database (not refresh token)
-        tokenService.saveRefreshToken(RefreshToken.builder()
-                .token(resetToken)
-                .usersId(user.getId())
-                .build());
-        
-        // TODO: Send email with reset link
         log.info("Password reset token generated for user: {}", email);
         log.info("Reset token: {}", resetToken);
-        
-        return "Password reset instructions have been sent to your email";
+
+        return resetToken;
     }
 
     @Override
     public String resetPassword(ResetPasswordRequest request) {
-        // Validate passwords match
         if(!request.getNewPassword().equals(request.getConfirmPassword())) {
             throw new InvalidDataException("New password and confirm password do not match");
         }
         
-        // Validate token and get user
         final String username = jwtService.extractUsername(request.getToken(), TokenType.RESET_PASSWORD);
         Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -126,12 +111,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new InvalidDataException("Invalid or expired reset password token");
         }
         
-        // Update password
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
-        
-        // Delete used reset token
-        tokenService.deleteByUserId(user.getId());
         
         log.info("Password reset successful for user: {}", username);
         return "Password has been reset successfully";
@@ -139,22 +120,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public String changePassword(ChangePasswordRequest request) {
-        Users user = isValidUser(request.getSecretKey());
+        Users user = utils.getCurrentUser();
+        if(!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            throw new InvalidDataException("Old password is incorrect");
+        }
         if(!request.getNewPassword().equals(request.getConfirmPassword())) {
             throw new InvalidDataException("New password and confirm password do not match");
         }
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
         return "Change password successful";
-    }
-
-    private Users isValidUser(String secretKey) {
-        final String username = jwtService.extractUsername(secretKey, TokenType.RESET_PASSWORD);
-        var user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found"));
-        if (!jwtService.isTokenValid(secretKey, user, TokenType.RESET_PASSWORD)) {
-            throw new InvalidDataException("Invalid secret key");
-        }
-        return user;
     }
 
     private String getRefreshToken(HttpServletRequest request) {
@@ -164,6 +139,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         return token;
     }
+
+    private Users getUserFromRefreshToken(String refreshToken) {
+        String username = jwtService.extractUsername(refreshToken, TokenType.REFRESH);
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+    }
+
+    private void validateRefreshToken(String refreshToken, Users user) {
+        if (!jwtService.isTokenValid(refreshToken, user, TokenType.REFRESH)) {
+            throw new InvalidDataException("Invalid refresh token");
+        }
+    }
+
 
 
 }

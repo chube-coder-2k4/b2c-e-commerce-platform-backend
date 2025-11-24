@@ -28,5 +28,13 @@ public class AuthenticationUtils {
         return null;
     }
 
+    public Users getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication != null && authentication.getPrincipal() instanceof Users user) {
+            return user;
+        }
+        return null;
+    }
+
 
 }

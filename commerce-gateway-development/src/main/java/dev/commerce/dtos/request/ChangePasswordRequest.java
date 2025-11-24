@@ -8,8 +8,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ChangePasswordRequest {
-    @NotBlank(message = "Secret key is required")
-    private String secretKey;
+    @NotBlank(message = "Old password is required")
+    @Size(min = 8, message = "Password must be at least 8 characters")
+    private String oldPassword;
     
     @NotBlank(message = "New password is required")
     @Size(min = 8, message = "Password must be at least 8 characters")

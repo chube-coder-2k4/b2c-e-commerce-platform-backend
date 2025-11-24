@@ -81,7 +81,8 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public String generateResetPasswordToken(UserDetails userDetails) {
         Map<String, Object> claims = buildClaims(userDetails);
-        return buildToken(claims, userDetails, TokenType.RESET_PASSWORD, expirationTime);
+        long expirationTimeReset = 10 * 60 * 1000;
+        return buildToken(claims, userDetails, TokenType.RESET_PASSWORD, expirationTimeReset);
     }
 
     private Claims extractAllClaims(String token, TokenType tokenType) {
