@@ -3,9 +3,7 @@
 > **Full-featured backend project** built for showcasing enterprise-level backend development using **Spring Boot 3**, **PostgreSQL**, **Redis**, **RabbitMQ**, **Cloudinary**, and **Docker**.  
 > Designed as a real-world **E-Commerce system** that includes authentication, payments, caching, event-driven communication, and deploy-ready setup.
 
-
 ---
-
 
 ## 🚀 Features Overview
 
