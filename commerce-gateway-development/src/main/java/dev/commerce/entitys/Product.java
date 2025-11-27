@@ -18,8 +18,7 @@ public class Product extends BaseEntity{
     private String name;
     private String slug;
     private String description;
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal price;
+    private double price;
     private int stockQuantity;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")

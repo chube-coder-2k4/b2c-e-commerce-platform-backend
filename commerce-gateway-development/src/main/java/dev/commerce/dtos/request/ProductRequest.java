@@ -14,7 +14,7 @@ public class ProductRequest {
     private String name;
     private String slug;
     private String description;
-    private BigDecimal price;
+    private double price;
     private int stockQuantity;
     private UUID categoryId;
 }
