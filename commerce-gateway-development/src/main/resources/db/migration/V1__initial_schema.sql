@@ -73,7 +73,7 @@ CREATE TABLE product (
                          name VARCHAR(255) NOT NULL,
                          slug VARCHAR(255) NOT NULL UNIQUE,
                          description TEXT,
-                         price DECIMAL(15, 2) NOT NULL,
+                         price DOUBLE PRECISION NOT NULL,
                          stock_quantity INTEGER NOT NULL DEFAULT 0,
                          is_active BOOLEAN DEFAULT true,
                          created_at TIMESTAMP NOT NULL,

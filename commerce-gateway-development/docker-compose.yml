@@ -7,7 +7,6 @@
 # 3. RabbitMQ - Message broker
 # 4. Spring Boot App - Backend application
 
-version: '3.8'
 
 # NETWORKS: Tạo mạng riêng để các container giao tiếp với nhau
 networks:
@@ -43,14 +42,6 @@ services:
     # Mount volume để data không bị mất
     volumes:
       - postgres-data:/var/lib/postgresql/data
-
-    # Healthcheck để đảm bảo database sẵn sàng
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
     networks:
       - commerce-network
 
@@ -70,12 +61,6 @@ services:
 
     volumes:
       - redis-data:/data
-
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
 
     networks:
       - commerce-network
@@ -98,13 +83,6 @@ services:
 
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
-
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-
     networks:
       - commerce-network
 
@@ -161,14 +139,6 @@ services:
 
     networks:
       - commerce-network
-
-    # Healthcheck cho Spring Boot
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8085/api/v1/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
 
 # ==========================================
 # HƯỚNG DẪN SỬ DỤNG:

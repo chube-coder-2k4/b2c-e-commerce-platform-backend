@@ -65,8 +65,8 @@ management:
 
 cloudinary:
   cloud-name: dfupyxrmr
-  api-key: 234171996373849
-  api-secret: 3EmG-cflOJbuIKmhxjPSR4vD6YI
+  api-key: 761299997964798
+  api-secret: YiYuolWsm0rzKqs8x6ZziE1rhr0
 vnpay:
   tmn-code: T5L6K6JN
   hash-secret: HZJYFQKXJXKXWQYQWZ
