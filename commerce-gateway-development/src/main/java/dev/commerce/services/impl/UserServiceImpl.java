@@ -1,6 +1,5 @@
 package dev.commerce.services.impl;
 
-import dev.commerce.dtos.common.LoginType;
 import dev.commerce.dtos.request.UserFilterRequest;
 import dev.commerce.dtos.request.UserRequest;
 import dev.commerce.dtos.request.UserUpdateRequest;

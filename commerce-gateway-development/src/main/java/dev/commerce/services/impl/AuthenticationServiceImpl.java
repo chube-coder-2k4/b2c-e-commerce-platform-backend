@@ -33,6 +33,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final RefreshTokenService tokenService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationUtils utils;
+    private static final String USER_NOT_FOUND = "User not found";
 
 
     @Override
@@ -46,7 +47,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         );
 
 
-        var user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new UserNotFoundException("User not found"));
+        var user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
         tokenService.saveRefreshToken(RefreshToken.builder()
@@ -84,7 +85,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public String forgotPassword(String email) {
-        Users user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
+        Users user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
         if(!user.isEnabled()) {
             throw new InvalidDataException("User account is not activated");
         }
@@ -105,7 +106,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         
         final String username = jwtService.extractUsername(request.getToken(), TokenType.RESET_PASSWORD);
         Users user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
         
         if (!jwtService.isTokenValid(request.getToken(), user, TokenType.RESET_PASSWORD)) {
             throw new InvalidDataException("Invalid or expired reset password token");
@@ -143,7 +144,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private Users getUserFromRefreshToken(String refreshToken) {
         String username = jwtService.extractUsername(refreshToken, TokenType.REFRESH);
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
     }
 
     private void validateRefreshToken(String refreshToken, Users user) {

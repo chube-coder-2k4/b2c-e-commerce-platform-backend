@@ -3,8 +3,7 @@ package dev.commerce.controllers;
 import dev.commerce.dtos.request.*;
 import dev.commerce.dtos.response.LoginResponse;
 import dev.commerce.services.OtpVerifyService;
-import dev.commerce.services.UserService;
-import dev.commerce.services.security.AuthenticationService;
+import dev.commerce.services.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -72,8 +71,8 @@ public class AuthenticationController {
     public ResponseEntity<String> logout(
             @Parameter(description = "HTTP request containing x-refresh-token header", hidden = true)
             HttpServletRequest request) {
-        authenticationService.logout(request);
-        return ResponseEntity.ok("Logout successful");
+
+        return ResponseEntity.ok(authenticationService.logout(request));
     }
 
     @Operation(summary = "Forgot password", description = "Send password reset token to user's email")

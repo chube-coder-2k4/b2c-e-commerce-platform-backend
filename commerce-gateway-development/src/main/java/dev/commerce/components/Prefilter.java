@@ -1,10 +1,9 @@
 package dev.commerce.components;
 
 import dev.commerce.dtos.common.TokenType;
-import dev.commerce.entitys.Users;
 import dev.commerce.services.UserService;
 import dev.commerce.services.impl.UserDetailServiceImpl;
-import dev.commerce.services.security.JwtService;
+import dev.commerce.services.JwtService;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
