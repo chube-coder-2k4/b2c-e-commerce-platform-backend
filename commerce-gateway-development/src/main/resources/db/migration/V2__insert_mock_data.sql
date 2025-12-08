@@ -86,9 +86,9 @@ VALUES
     ('44444444-dddd-dddd-dddd-444444444444', '44444444-dddd-4444-dddd-444444444444', '44444444-dddd-4444-dddd-444444444444', 1, 49.99, NOW(), NOW()),
     ('55555555-eeee-eeee-eeee-555555555555', '55555555-eeee-5555-eeee-555555555555', '55555555-eeee-5555-eeee-555555555555', 4, 29.99, NOW(), NOW());
 -- ==============================
--- Insert mock data for Order
+-- Insert mock data for Orders
 -- ==============================
-INSERT INTO "order"(id, user_id, order_code, total_amount, status, payment_method, shipping_address, paid_at, created_at, updated_at)
+INSERT INTO "orders"(id, user_id, order_code, total_amount, status, payment_method, shipping_address, paid_at, created_at, updated_at)
 VALUES
     ('aaaaaaaa-aaaa-1111-aaaa-111111111111', '11111111-1111-1111-1111-111111111111', 'ORD-0001', 999.99, 'PAID', 'CREDIT_CARD', 'Address 1', NOW(), NOW(), NOW()),
     ('bbbbbbbb-bbbb-2222-bbbb-222222222222', '22222222-2222-2222-2222-222222222222', 'ORD-0002', 1799.98, 'PENDING', 'PAYPAL', 'Address 2', NULL, NOW(), NOW()),
@@ -137,5 +137,5 @@ VALUES
     ('aaaaaaaa-1111-aaaa-1111-aaaaaaaa1111', '11111111-1111-1111-1111-111111111111', 'LOGIN', 'User logged in', NOW(), NOW()),
     ('bbbbbbbb-2222-bbbb-2222-bbbbbbbb2222', '22222222-2222-2222-2222-222222222222', 'LOGOUT', 'User logged out', NOW(), NOW()),
     ('cccccccc-3333-cccc-3333-cccccccc3333', '33333333-3333-3333-3333-333333333333', 'UPDATE_PROFILE', 'User updated profile', NOW(), NOW()),
-    ('dddddddd-4444-dddd-4444-dddddddd4444', '44444444-4444-4444-4444-444444444444', 'CREATE_ORDER', 'User created order', NOW(), NOW()),
+    ('dddddddd-4444-dddd-4444-dddddddd4444', '44444444-4444-4444-4444-444444444444', 'CREATE_ORDER', 'User created orders', NOW(), NOW()),
     ('eeeeeeee-5555-eeee-5555-eeeeeeee5555', '55555555-5555-5555-5555-555555555555', 'RESET_PASSWORD', 'User reset password', NOW(), NOW());

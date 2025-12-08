@@ -124,8 +124,8 @@ CREATE TABLE cart_item (
                            FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE
 );
 
--- Create order table
-CREATE TABLE "order" (
+-- Create orders table
+CREATE TABLE "orders" (
                          id UUID PRIMARY KEY,
                          user_id UUID NOT NULL,
                          order_code VARCHAR(100) NOT NULL UNIQUE,
@@ -152,7 +152,7 @@ CREATE TABLE order_item (
                             updated_at TIMESTAMP NOT NULL,
                             created_by UUID,
                             updated_by UUID,
-                            FOREIGN KEY (order_id) REFERENCES "order"(id) ON DELETE CASCADE,
+                            FOREIGN KEY (order_id) REFERENCES "orders"(id) ON DELETE CASCADE,
                             FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE
 );
 
@@ -169,7 +169,7 @@ CREATE TABLE payment (
                          updated_at TIMESTAMP NOT NULL,
                          created_by UUID,
                          updated_by UUID,
-                         FOREIGN KEY (order_id) REFERENCES "order"(id) ON DELETE CASCADE
+                         FOREIGN KEY (order_id) REFERENCES "orders"(id) ON DELETE CASCADE
 );
 
 -- Create audit_log table
@@ -190,9 +190,9 @@ CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_product_slug ON product(slug);
 CREATE INDEX idx_product_category ON product(category_id);
 CREATE INDEX idx_cart_user ON cart(user_id);
-CREATE INDEX idx_order_user ON "order"(user_id);
-CREATE INDEX idx_order_code ON "order"(order_code);
-CREATE INDEX idx_order_status ON "order"(status);
+CREATE INDEX idx_order_user ON "orders"(user_id);
+CREATE INDEX idx_order_code ON "orders"(order_code);
+CREATE INDEX idx_order_status ON "orders"(status);
 CREATE INDEX idx_payment_order ON payment(order_id);
 CREATE INDEX idx_payment_transaction ON payment(transaction_id);
 CREATE INDEX idx_audit_log_user ON audit_log(user_id);

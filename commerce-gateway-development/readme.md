@@ -20,23 +20,23 @@
     - Image upload via **Cloudinary**
     - Pagination, sorting, and filtering
 - **Shopping Cart & Orders**
-    - Add-to-cart, checkout flow, order tracking
+    - Add-to-cart, checkout flow, orders tracking
     - Stock reservation & transaction consistency
 - **Payments**
     - Integrated **VNPAY Sandbox**
     - Async callback verification & event publishing
 - **Mail Notifications**
-    - HTML email sender (order confirmation, OTP)
+    - HTML email sender (orders confirmation, OTP)
     - Event listener triggered mails
 - **Redis Caching**
     - Cache product lists & categories
     - TTL & eviction strategies
 - **RabbitMQ / Kafka**
-    - Event-driven communication (order events, email jobs)
+    - Event-driven communication (orders events, email jobs)
 - **Scheduler**
     - Cron/fixed-rate jobs (e.g., clean expired orders)
 - **WebSocket**
-    - Realtime order notifications for Admin Dashboard
+    - Realtime orders notifications for Admin Dashboard
 - **I18N**
     - Vietnamese 🇻🇳 + English 🇬🇧 resource bundles
 - **API Docs**
@@ -80,7 +80,7 @@ src/main/java/com/chubecommerce
 ┣ user/                 # User, role management
 ┣ product/              # Product, category, image
 ┣ cart/                 # Cart & cart items
-┣ order/                # Order, order items
+┣ orders/                # Order, orders items
 ┣ payment/              # VNPAY integration
 ┣ common/               # Constants, utils, exception handler
 ┣ scheduler/            # Cron jobs
@@ -159,13 +159,13 @@ Configurable in application.yml
 
 Payment flow:
 
-Create order → call /api/payments/vnpay/pay
+Create orders → call /api/payments/vnpay/pay
 
 Redirect to VNPAY sandbox
 
 After payment, callback /api/payments/vnpay/return
 
-Verify checksum → update order status → emit PaymentSuccessEvent
+Verify checksum → update orders status → emit PaymentSuccessEvent
 
 📬 Email Notification Example
 
@@ -188,7 +188,7 @@ src/main/resources/i18n/
 
 Usage:
 
-messageSource.getMessage("order.success", null, LocaleContextHolder.getLocale());
+messageSource.getMessage("orders.success", null, LocaleContextHolder.getLocale());
 
 🧪 Testing
 
