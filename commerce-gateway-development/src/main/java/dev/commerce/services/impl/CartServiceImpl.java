@@ -53,6 +53,8 @@ public class CartServiceImpl implements CartService {
         cartItemRepository.save(cartItem);
         double totalPrice = cartItemRepository.sumTotalPrice(cart.getId());
         cart.setTotalPrice(totalPrice);
+        cart.setUsers(user);
+        cart.setCreatedBy(user.getId());
         cartRepository.save(cart);
         return cartMapper.toResponse(cart);
     }
@@ -75,6 +77,7 @@ public class CartServiceImpl implements CartService {
         Cart cart = cartItem.getCart();
         Double totalPrice = cartItemRepository.sumTotalPrice(cart.getId());
         cart.setTotalPrice(totalPrice != null ? totalPrice : 0.0);
+        cart.setUpdatedBy(utils.getCurrentUserId());
         cartRepository.save(cart);
         return cartMapper.toResponse(cart);
     }

@@ -23,7 +23,7 @@ public class Product extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
-    private boolean isActive = true;
+    private boolean active = true;
 
     @PrePersist
     public void ensureId() {
