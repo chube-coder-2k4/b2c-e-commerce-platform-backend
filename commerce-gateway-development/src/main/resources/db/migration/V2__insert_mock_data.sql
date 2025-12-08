@@ -45,7 +45,7 @@ VALUES
 -- ==============================
 -- Insert mock data for Product
 -- ==============================
-INSERT INTO product(id, category_id, name, slug, description, price, stock_quantity, is_active, created_at, updated_at)
+INSERT INTO product(id, category_id, name, slug, description, price, stock_quantity, active, created_at, updated_at)
 VALUES
     ('11111111-aaaa-1111-aaaa-111111111111', '10101010-1010-1010-1010-101010101010', 'iPhone 15', 'iphone-15', 'Latest iPhone model', 999.99, 50, true, NOW(), NOW()),
     ('22222222-bbbb-2222-bbbb-222222222222', '10101010-1010-1010-1010-101010101010', 'Samsung Galaxy S23', 'samsung-galaxy-s23', 'Flagship Samsung phone', 899.99, 40, true, NOW(), NOW()),

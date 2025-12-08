@@ -35,11 +35,11 @@ public class VNPayUtil {
         cld.add(Calendar.MINUTE, 15);
         vnp_Params.put("vnp_ExpireDate", formatter.format(cld.getTime()));
 
-        // Logic giống hệt VNPayController mẫu
+        // Logic same VNPayController mẫu
         String queryUrl = hashAllFields(vnp_Params);
         String vnp_SecureHash = hmacSHA512(config.getHashSecret(), queryUrl);
 
-        log.info("=== VNPAY SIGNATURE DEBUG (FINAL) ===");
+        log.info("=== VNPay SIGNATURE DEBUG (FINAL) ===");
         log.info("Hash Data (Query URL): {}", queryUrl);
         log.info("Secure Hash (SHA512): {}", vnp_SecureHash);
         log.info("====================================");
@@ -73,7 +73,7 @@ public class VNPayUtil {
         while (itr.hasNext()) {
             String fieldName = itr.next();
             String fieldValue = fields.get(fieldName);
-            if ((fieldValue != null) && (fieldValue.length() > 0)) {
+            if (!fieldValue.isEmpty()) {
                 sb.append(fieldName);
                 sb.append("=");
                 sb.append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8));

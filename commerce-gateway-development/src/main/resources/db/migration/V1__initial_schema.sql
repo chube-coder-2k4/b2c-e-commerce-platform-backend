@@ -75,7 +75,7 @@ CREATE TABLE product (
                          description TEXT,
                          price DOUBLE PRECISION NOT NULL,
                          stock_quantity INTEGER NOT NULL DEFAULT 0,
-                         is_active BOOLEAN DEFAULT true,
+                         active BOOLEAN DEFAULT true,
                          created_at TIMESTAMP NOT NULL,
                          updated_at TIMESTAMP NOT NULL,
                          created_by UUID,
