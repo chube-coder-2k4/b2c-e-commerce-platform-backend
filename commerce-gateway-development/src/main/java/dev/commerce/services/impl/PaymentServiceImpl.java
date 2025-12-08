@@ -81,47 +81,41 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     public PaymentResponse handlePaymentCallback(Map<String, String> vnpParams) {
         String vnp_SecureHash = vnpParams.get("vnp_SecureHash");
+        vnpParams.remove("vnp_SecureHash");
+        vnpParams.remove("vnp_SecureHashType");
 
-        // Remove hash fields before verifying
-        Map<String, String> paramsToVerify = new TreeMap<>(vnpParams);
-        paramsToVerify.remove("vnp_SecureHash");
-        paramsToVerify.remove("vnp_SecureHashType");
+        String signValue = VNPayUtil.hashAllFields(vnpParams);
+        String vnp_SecureHash_new = VNPayUtil.hmacSHA512(vnPayConfig.getHashSecret(), signValue);
 
-        // Verify signature using SHA512 (not SHA256!)
-        String hashData = VNPayUtil.buildHashData(paramsToVerify);
-        String signValue = VNPayUtil.hmacSHA512(vnPayConfig.getHashSecret(), hashData);
+        if (vnp_SecureHash.equals(vnp_SecureHash_new)) {
+            UUID paymentId = UUID.fromString(vnpParams.get("vnp_TxnRef"));
+            Payment payment = paymentRepository.findById(paymentId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Payment not found"));
 
-        if (!signValue.equalsIgnoreCase(vnp_SecureHash)) {
+            String responseCode = vnpParams.get("vnp_ResponseCode");
+            String transactionNo = vnpParams.get("vnp_TransactionNo");
+
+            Orders order = payment.getOrders();
+
+            if ("00".equals(responseCode)) {
+                payment.setStatus(PaymentStatus.COMPLETED);
+                payment.setTransactionId(transactionNo);
+                payment.setPaidAt(LocalDateTime.now());
+
+                order.setStatus(OrderStatus.PAID);
+                order.setPaidAt(LocalDateTime.now());
+            } else {
+                payment.setStatus(PaymentStatus.FAILED);
+                order.setStatus(OrderStatus.PAYMENT_FAILED);
+            }
+
+            paymentRepository.save(payment);
+            orderRepository.save(order);
+
+            return paymentMapper.toResponse(payment);
+        } else {
             throw new IllegalArgumentException("Invalid payment signature");
         }
-
-        UUID paymentId = UUID.fromString(vnpParams.get("vnp_TxnRef"));
-        Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Payment not found"));
-
-        String responseCode = vnpParams.get("vnp_ResponseCode");
-        String transactionNo = vnpParams.get("vnp_TransactionNo");
-
-        Orders order = payment.getOrders();
-
-        if ("00".equals(responseCode)) {
-            // Thanh toán thành công
-            payment.setStatus(PaymentStatus.COMPLETED);
-            payment.setTransactionId(transactionNo);
-            payment.setPaidAt(LocalDateTime.now());
-
-            order.setStatus(OrderStatus.PAID);
-            order.setPaidAt(LocalDateTime.now());
-        } else {
-            // Thanh toán thất bại
-            payment.setStatus(PaymentStatus.FAILED);
-            order.setStatus(OrderStatus.PAYMENT_FAILED);
-        }
-
-        paymentRepository.save(payment);
-        orderRepository.save(order);
-
-        return paymentMapper.toResponse(payment);
     }
 
     @Override

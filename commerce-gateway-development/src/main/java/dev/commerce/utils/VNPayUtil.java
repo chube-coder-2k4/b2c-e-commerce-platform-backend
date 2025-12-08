@@ -7,135 +7,81 @@ import javax.crypto.spec.SecretKeySpec;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Slf4j
 public class VNPayUtil {
 
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-
     public static String buildPaymentUrl(UUID paymentId, double amount, VNPayConfig config) {
-        long vnpAmount = (long) (amount * 100); // VNPAY yêu cầu *100
+        long vnpAmount = (long) (amount * 100);
 
-        Map<String, String> params = new TreeMap<>();
-        params.put("vnp_Version", "2.1.0");
-        params.put("vnp_Command", "pay");
-        params.put("vnp_TmnCode", config.getTmnCode());
-        params.put("vnp_Amount", String.valueOf(vnpAmount));
-        params.put("vnp_CurrCode", "VND");
-        params.put("vnp_TxnRef", paymentId.toString());
-        params.put("vnp_OrderInfo", "Thanh toan don hang:" + paymentId.toString().substring(0, 8)); // Giống VNPayController mẫu
-        params.put("vnp_OrderType", "other");
-        params.put("vnp_Locale", "vn");
-        params.put("vnp_ReturnUrl", config.getReturnUrl());
-        params.put("vnp_IpAddr", "127.0.0.1");
+        Map<String, String> vnp_Params = new TreeMap<>();
+        vnp_Params.put("vnp_Version", "2.1.0");
+        vnp_Params.put("vnp_Command", "pay");
+        vnp_Params.put("vnp_TmnCode", config.getTmnCode());
+        vnp_Params.put("vnp_Amount", String.valueOf(vnpAmount));
+        vnp_Params.put("vnp_CurrCode", "VND");
+        vnp_Params.put("vnp_TxnRef", paymentId.toString());
+        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + paymentId);
+        vnp_Params.put("vnp_OrderType", "other");
+        vnp_Params.put("vnp_Locale", "vn");
+        vnp_Params.put("vnp_ReturnUrl", config.getReturnUrl());
+        vnp_Params.put("vnp_IpAddr", "127.0.0.1");
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-        params.put("vnp_CreateDate", formatter.format(cld.getTime()));
+        vnp_Params.put("vnp_CreateDate", formatter.format(cld.getTime()));
 
         cld.add(Calendar.MINUTE, 15);
-        params.put("vnp_ExpireDate", formatter.format(cld.getTime())); // THÊM ExpireDate!
+        vnp_Params.put("vnp_ExpireDate", formatter.format(cld.getTime()));
 
-        String hashData = buildHashData(params);
-        String secureHash = hmacSHA512(config.getHashSecret(), hashData);
+        // Logic giống hệt VNPayController mẫu
+        String queryUrl = hashAllFields(vnp_Params);
+        String vnp_SecureHash = hmacSHA512(config.getHashSecret(), queryUrl);
 
-        log.info("=== VNPAY SIGNATURE DEBUG ===");
-        log.info("Hash Secret: {}", config.getHashSecret());
-        log.info("Hash Data: {}", hashData);
-        log.info("Secure Hash (SHA512): {}", secureHash);
-        log.info("============================");
+        log.info("=== VNPAY SIGNATURE DEBUG (FINAL) ===");
+        log.info("Hash Data (Query URL): {}", queryUrl);
+        log.info("Secure Hash (SHA512): {}", vnp_SecureHash);
+        log.info("====================================");
 
-        String query = buildQuery(params);
-
-        return config.getUrl() + "?" + query + "&vnp_SecureHash=" + secureHash;
+        return config.getUrl() + "?" + queryUrl + "&vnp_SecureHash=" + vnp_SecureHash;
     }
 
-    /**
-     * Verify callback
-     */
-    public static boolean verify(Map<String, String> params, VNPayConfig config) {
-        if (!params.containsKey("vnp_SecureHash")) return false;
-
-        String secureHash = params.get("vnp_SecureHash");
-
-        Map<String, String> sorted = new TreeMap<>(params);
-        sorted.remove("vnp_SecureHash");
-        sorted.remove("vnp_SecureHashType");
-
-        String hashData = buildHashData(sorted);
-        String calculated = hmacSHA256(config.getHashSecret(), hashData);
-
-        return calculated.equalsIgnoreCase(secureHash);
-    }
-
-    /** Build query string - NO URL ENCODING (VNPay không yêu cầu encode) */
-    public static String buildQuery(Map<String, String> params) {
-        StringBuilder sb = new StringBuilder();
-        for (Map.Entry<String, String> e : params.entrySet()) {
-            sb.append(e.getKey());
-            sb.append("=");
-            sb.append(e.getValue());
-            sb.append("&");
-        }
-        sb.deleteCharAt(sb.length() - 1);
-        return sb.toString();
-    }
-
-    /** Build hash data (raw data) - NO URL ENCODING for VNPay signature */
-    public static String buildHashData(Map<String, String> params) {
-        StringBuilder sb = new StringBuilder();
-        Iterator<Map.Entry<String, String>> iterator = params.entrySet().iterator();
-
-        while (iterator.hasNext()) {
-            Map.Entry<String, String> entry = iterator.next();
-            sb.append(entry.getKey());
-            sb.append("=");
-            sb.append(entry.getValue());
-            if (iterator.hasNext()) sb.append("&");
-        }
-        return sb.toString();
-    }
-
-    /** SHA256 HMAC */
-    public static String hmacSHA256(String secretKey, String data) {
+    public static String hmacSHA512(String key, String data) {
         try {
-            Mac hmac = Mac.getInstance("HmacSHA256");
-            SecretKeySpec keySpec =
-                    new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
-            hmac.init(keySpec);
-            byte[] hash = hmac.doFinal(data.getBytes(StandardCharsets.UTF_8));
-            return bytesToHex(hash);
-        } catch (Exception e) {
-            throw new RuntimeException("Cannot create HMAC SHA256", e);
-        }
-    }
-
-    /** Convert byte[] → Hex */
-    private static String bytesToHex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        for (byte b : bytes) sb.append(String.format("%02x", b)); // chữ thường
-        return sb.toString();
-    }
-
-    /** SHA512 HMAC - for backward compatibility */
-    public static String hmacSHA512(String secretKey, String data) {
-        try {
+            final byte[] byteKey = key.getBytes(StandardCharsets.UTF_8);
             Mac hmac = Mac.getInstance("HmacSHA512");
-            SecretKeySpec keySpec =
-                    new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "HmacSHA512");
+            SecretKeySpec keySpec = new SecretKeySpec(byteKey, "HmacSHA512");
             hmac.init(keySpec);
-            byte[] hash = hmac.doFinal(data.getBytes(StandardCharsets.UTF_8));
-            return bytesToHex(hash);
+            byte[] macData = hmac.doFinal(data.getBytes(StandardCharsets.UTF_8));
+            // Convert to lowercase hex
+            StringBuilder sb = new StringBuilder(2 * macData.length);
+            for(byte b: macData) {
+                sb.append(String.format("%02x", b&0xff));
+            }
+            return sb.toString();
         } catch (Exception e) {
-            throw new RuntimeException("Cannot create HMAC SHA512", e);
+            throw new RuntimeException("Failed to calculate hmac-sha512", e);
         }
     }
 
-    /** Hash all fields - alias for buildHashData */
-    public static String hashAllFields(Map<String, String> params) {
-        return buildHashData(new TreeMap<>(params));
+    public static String hashAllFields(Map<String, String> fields) {
+        List<String> fieldNames = new ArrayList<>(fields.keySet());
+        Collections.sort(fieldNames);
+        StringBuilder sb = new StringBuilder();
+        Iterator<String> itr = fieldNames.iterator();
+        while (itr.hasNext()) {
+            String fieldName = itr.next();
+            String fieldValue = fields.get(fieldName);
+            if ((fieldValue != null) && (fieldValue.length() > 0)) {
+                sb.append(fieldName);
+                sb.append("=");
+                sb.append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8));
+            }
+            if (itr.hasNext()) {
+                sb.append("&");
+            }
+        }
+        return sb.toString();
     }
 }
