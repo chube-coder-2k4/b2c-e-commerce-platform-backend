@@ -68,9 +68,9 @@ cloudinary:
   api-key: 761299997964798
   api-secret: YiYuolWsm0rzKqs8x6ZziE1rhr0
 vnpay:
-  tmn-code: T5L6K6JN
-  hash-secret: HZJYFQKXJXKXWQYQWZ
-  url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+  tmn-code: C68WRIY5
+  hash-secret: NQMX8QDF8YSFZ729AIO2RWWZK66GXTED
+  url:  https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
   api-url: https://sandbox.vnpayment.vn/merchant_webapi/api/transaction
   return-url: http://localhost:8080/vnpay/return
   ipn-url: http://localhost:8080/vnpay/ipn

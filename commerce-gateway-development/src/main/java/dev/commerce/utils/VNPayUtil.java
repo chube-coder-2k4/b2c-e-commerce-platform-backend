@@ -105,4 +105,23 @@ public class VNPayUtil {
         for (byte b : bytes) sb.append(String.format("%02X", b));
         return sb.toString();
     }
+
+    /** SHA512 HMAC - for backward compatibility */
+    public static String hmacSHA512(String secretKey, String data) {
+        try {
+            Mac hmac = Mac.getInstance("HmacSHA512");
+            SecretKeySpec keySpec =
+                    new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "HmacSHA512");
+            hmac.init(keySpec);
+            byte[] hash = hmac.doFinal(data.getBytes(StandardCharsets.UTF_8));
+            return bytesToHex(hash);
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot create HMAC SHA512", e);
+        }
+    }
+
+    /** Hash all fields - alias for buildHashData */
+    public static String hashAllFields(Map<String, String> params) {
+        return buildHashData(new TreeMap<>(params));
+    }
 }
