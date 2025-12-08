@@ -10,7 +10,9 @@ import org.mapstruct.Mapping;
 public interface UsersMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "provider", expression = "java(userRequest.getProvider() != null ? dev.commerce.dtos.common.LoginType.valueOf(userRequest.getProvider()) : dev.commerce.dtos.common.LoginType.LOCAL)")
+    @Mapping(target = "provider",
+            expression = "java(userRequest.getProvider() != null ? userRequest.getProvider() : dev.commerce.dtos.common.LoginType.LOCAL)"
+            )
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "isVerify", constant = "false")
     @Mapping(target = "isActive", constant = "true")

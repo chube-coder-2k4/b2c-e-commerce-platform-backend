@@ -14,9 +14,10 @@ import dev.commerce.services.MailService;
 import dev.commerce.services.OtpVerifyService;
 import dev.commerce.services.UserService;
 import dev.commerce.utils.AuthenticationUtils;
-import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +27,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Set;
 import java.util.UUID;
 
@@ -44,8 +44,9 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    @Transactional(rollbackFor = Exception.class) // rollbackFor là để chỉ các lệ cụ thể để rollback
-    public UUID saveUser(UserRequest request) throws MessagingException, UnsupportedEncodingException {
+    @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = "user_list", allEntries = true)
+    public UUID saveUser(UserRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new InvalidDataException("Email already exists");
         }
@@ -67,6 +68,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
+    @CacheEvict(value = "user_list", allEntries = true)
     public UUID updateUser(UUID userId, UserUpdateRequest request) {
         Users user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found"));
         user.setFullName(request.getFullName());
@@ -86,6 +88,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
+    @CacheEvict(value = "user_list", allEntries = true)
     public void deleteUser(UUID userId) {
         Users user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found"));
         user.setActive(false);
@@ -111,6 +114,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
+    @Cacheable(value = "user_list", key = "#filterRequest.toString()")
     public Page<UserResponse> getAllUserWithFilter(UserFilterRequest filterRequest) {
 
         Specification<Users> spec = Specification.allOf();
@@ -155,8 +159,6 @@ public class UserServiceImpl implements UserService {
                 );
     }
 
-
-
     private Specification<Users> containsIgnoreCase(
             Specification<Users> spec, String field, String value) {
         if (value == null || value.isEmpty()) return spec;
@@ -172,8 +174,4 @@ public class UserServiceImpl implements UserService {
                 cb.equal(root.get(field), value)
         );
     }
-
-
-
-
 }
