@@ -1,5 +1,6 @@
 package dev.commerce.dtos.request;
 
+import dev.commerce.dtos.common.LoginType;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -29,7 +30,7 @@ public class UserRequest {
     @NotBlank(message = "Address is required")
     private String address;
 
-    private String provider; // Default: LOCAL if not provided
+    private LoginType provider; // Default: LOCAL if not provided
 
     @NotEmpty(message = "At least one role must be assigned")
     private Set<String> role;
