@@ -5,6 +5,7 @@ import dev.commerce.dtos.common.PaymentMethod;
 import dev.commerce.dtos.request.OrderRequest;
 import dev.commerce.dtos.response.OrderDetailResponse;
 import dev.commerce.dtos.response.OrderResponse;
+import dev.commerce.dtos.websocket.OrderStatusMessage;
 import dev.commerce.entitys.*;
 import dev.commerce.exception.ResourceNotFoundException;
 import dev.commerce.mappers.OrderMapper;
@@ -12,6 +13,7 @@ import dev.commerce.repositories.jpa.*;
 import dev.commerce.services.OrderService;
 import dev.commerce.utils.AuthenticationUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +29,8 @@ public class OrderServiceImpl implements OrderService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final AuthenticationUtils utils;
+    private final SimpMessagingTemplate messagingTemplate;
+
 
     @Override
     public OrderDetailResponse createOrder(OrderRequest orderRequest) {
@@ -80,6 +84,7 @@ public class OrderServiceImpl implements OrderService {
         Orders orders = getOrderById(orderId);
         orders.setStatus(status);
         orderRepository.save(orders);
+        pushOrderStatusToUser(orders);
         return orderMapper.toOrderResponse(orders);
     }
 
@@ -103,5 +108,21 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Orders not found"));
     }
+
+    private void pushOrderStatusToUser(Orders order) {
+        String userId = order.getUsers().getId().toString();
+
+        OrderStatusMessage payload = new OrderStatusMessage(
+                order.getId().toString(),
+                order.getStatus().name(),
+                "Your order " + order.getOrderCode() + " is now " + order.getStatus()
+        );
+
+        messagingTemplate.convertAndSend(
+                "/topic/order-status." + userId,
+                payload
+        );
+    }
+
 
 }
