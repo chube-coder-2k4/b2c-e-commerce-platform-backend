@@ -29,9 +29,20 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
         //     //       stompClient.connect({}, function(frame) {
         //    //           console.log('Connected: ' + frame);
         //   //           // Thực hiện các thao tác sau khi kết nối thành công
-        // //        });
-        //     """;
-        // Lưu ý: Đoạn code trên là ví dụ minh họa cách client có thể kết nối đến endpoint WebSocket sử dụng SockJS và STOMP
+        //  //        });
+        // //   """;
+        //// Lưu ý: Đoạn code trên là ví dụ minh họa cách client có thể kết nối đến endpoint WebSocket sử dụng SockJS và STOMP
+        // // Bạn cần tích hợp đoạn code này vào phần frontend của ứng dụng của bạn để thiết lập kết nối WebSocket
+        // // Ngoài ra, bạn cũng cần xử lý các sự kiện kết nối, gửi và nhận tin nhắn trên client
+        // // Đoạn code trên chỉ minh họa cách thiết lập kết nối ban đầu
+        // // Hãy đảm bảo rằng bạn đã thêm các thư viện cần thiết cho SockJS và STOMP vào dự án frontend của bạn
+        // // // Ví dụ: Sử dụng npm để cài đặt các thư viện này
+        // // npm install sockjs-client stompjs
+        // // // Sau đó, bạn có thể sử dụng chúng trong mã JavaScript của mình để thiết lập kết nối WebSocket
+        // // // Lưu ý rằng bạn cần thay thế 'http://your-server-domain/ws' bằng URL thực tế của server nơi ứng dụng Spring Boot của bạn đang chạy
+        // // // Ngoài ra, hãy đảm bảo rằng server của bạn đang chạy và có thể chấp nhận kết nối WebSocket tại endpoint /ws
+        // // // Đoạn code trên chỉ là ví dụ minh họa và bạn cần điều chỉnh nó phù hợp với cấu trúc và logic của ứng dụng frontend của bạn
+        // // // Hãy tham khảo tài liệu của SockJS và STOMP để biết thêm chi tiết về cách sử dụng chúng trong ứng dụng của bạn
     }
 
     @Override

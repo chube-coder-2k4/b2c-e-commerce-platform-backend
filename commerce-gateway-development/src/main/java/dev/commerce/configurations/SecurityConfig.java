@@ -44,7 +44,8 @@ public class SecurityConfig {
             "/api/v1/users/register",
             "/api/v1/payments/vnpay-callback",
             "/payment-success",
-            "/payment-failed"
+            "/payment-failed",
+            "/ws/**"
     };
 
     @Bean
