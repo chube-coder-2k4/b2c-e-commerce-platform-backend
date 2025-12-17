@@ -8,5 +8,4 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 @EnableJpaRepositories(basePackages = "dev.commerce.repositories.jpa")
 @EnableRedisRepositories(basePackages = "dev.commerce.repositories.redis")
 public class RepositoryConfig {
-
 }

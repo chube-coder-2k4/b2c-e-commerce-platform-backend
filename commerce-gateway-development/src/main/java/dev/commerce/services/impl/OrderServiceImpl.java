@@ -81,7 +81,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponse updateStatus(UUID orderId, OrderStatus status) {
-        NotificationSocket noti = new NotificationSocket();
+//        NotificationSocket noti = new NotificationSocket();
 
         Orders orders = getOrderById(orderId);
         orders.setStatus(status);

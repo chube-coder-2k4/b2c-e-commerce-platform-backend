@@ -31,11 +31,6 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final UserDetailsService userDetailsService;
     private final PasswordConfig passwordConfig;
-
-    // trong class này để thực hiện được @PreAuthorize("hasRole('ADMIN')") ở controller thì cần khai báo @EnableMethodSecurity ở main application
-    //
-
-    // khai báo whitelist các endpoint ko cần xác thực ở đây nếu có
     private static final String[] AUTH_WHITELIST = {
             "/api/v1/auth/**",
             "/v3/api-docs/**",
@@ -53,12 +48,12 @@ public class SecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
-                registry.addMapping("/**") // endpoint /api/** , /auth/** , ...
-                        .allowedOrigins("*") // mapping domain api http://localhost:3000 , http://example.com , ...
+                registry.addMapping("/**")
+                        .allowedOrigins("*")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*") //  header Authorization , Content-Type , ...
-                        .allowCredentials(false) // cookie false allowedOrigins là * nên ko thể gửi cookie nếu là true thì chỉ rõ domain
-                        .maxAge(3600); // sẽ gửi lại yêu cầu preflight
+                        .allowedHeaders("*")
+                        .allowCredentials(false)
+                        .maxAge(3600);
             }
         };
     }

@@ -35,7 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Page<CategoryResponse> getAllCategories(String name, int page, int size, String sortBy, String sortDir) {
-        Specification<Category> spec = (root,query,cr) -> cr.isTrue(root.get("active"));
+        Specification<Category> spec = (root,query,cr) -> cr.isTrue(root.get("isActive"));
         if(name != null && !name.isEmpty()){
         spec = spec.and((root,query,cr) -> cr.like(cr.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
         }
