@@ -1,6 +1,6 @@
 # 🛍️ Mini E-Commerce Platform (Spring Boot Monolith)
 
-> **Full-featured backend project** built for showcasing enterprise-level backend development using **Spring Boot 3**, **PostgreSQL**, **Redis**, **RabbitMQ**, **Cloudinary**, and **Docker**.  
+> **Full-featured backend project** built for showcasing enterprise-level backend development using **Spring Boot 3**, **PostgreSQL**, **Redis**, **Cloudinary**, and **Docker**.  
 > Designed as a real-world **E-Commerce system** that includes authentication, payments, caching, event-driven communication, and deploy-ready setup.
 
 ---
@@ -31,8 +31,6 @@
 - **Redis Caching**
   - Cache product lists & categories
   - TTL & eviction strategies
-- **RabbitMQ / Kafka**
-  - Event-driven communication (order events, email jobs)
 - **Scheduler**
   - Cron/fixed-rate jobs (e.g., clean expired orders)
 - **WebSocket**
@@ -60,7 +58,6 @@
 | **Backend** | Spring Boot 3, Spring Data JPA, Spring Security |
 | **Database** | PostgreSQL + Flyway migrations |
 | **Cache** | Redis |
-| **Message Broker** | RabbitMQ (or Kafka optional) |
 | **Storage** | Cloudinary (images), AWS S3 optional |
 | **Auth** | JWT + OAuth2 (Google, GitHub) |
 | **Testing** | JUnit, Mockito |
