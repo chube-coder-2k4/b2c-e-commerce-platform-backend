@@ -10,6 +10,7 @@ import dev.commerce.exception.ResourceNotFoundException;
 import dev.commerce.mappers.ProductImageMapper;
 import dev.commerce.repositories.jpa.ProductImageRepository;
 import dev.commerce.repositories.jpa.ProductRepository;
+import dev.commerce.services.AuditLogService;
 import dev.commerce.services.ProductImageService;
 import dev.commerce.utils.AuthenticationUtils;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,8 @@ public class ProductImageServiceImpl implements ProductImageService {
     private final Cloudinary cloudinary;
     private final ProductRepository productRepository;
     private final AuthenticationUtils utils;
+    private final AuditLogService auditLogService;
+
 
     private static final List<String> ALLOWED_CONTENT_TYPES = Arrays.asList(
             "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"
@@ -90,6 +93,8 @@ public class ProductImageServiceImpl implements ProductImageService {
         }
         productImage.setCreatedBy(utils.getCurrentUserId());
         ProductImage saved = productImageRepository.save(productImage);
+        auditLogService.log("Product Image", "User " + utils.getCurrentUser().getUsername() +
+                " uploaded image for product " + product.getName());
         return productImageMapper.toResponse(saved);
     }
 
@@ -110,6 +115,8 @@ public class ProductImageServiceImpl implements ProductImageService {
         }
         productImageRepository.delete(image);
 
+        auditLogService.log("Product Image", "User " + utils.getCurrentUser().getUsername() +
+                " deleted image for product " + product.getName());
         return ProductImageResponse.builder()
                 .id(image.getId())
                 .imageUrl(image.getImageUrl())

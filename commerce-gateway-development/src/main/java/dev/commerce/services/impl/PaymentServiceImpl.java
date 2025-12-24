@@ -12,6 +12,7 @@ import dev.commerce.exception.ResourceNotFoundException;
 import dev.commerce.mappers.PaymentMapper;
 import dev.commerce.repositories.jpa.OrderRepository;
 import dev.commerce.repositories.jpa.PaymentRepository;
+import dev.commerce.services.AuditLogService;
 import dev.commerce.services.PaymentService;
 import dev.commerce.utils.AuthenticationUtils;
 import dev.commerce.utils.VNPayUtil;
@@ -32,6 +33,12 @@ public class PaymentServiceImpl implements PaymentService {
     private final AuthenticationUtils utils;
     private final VNPayConfig vnPayConfig;
     private final PaymentMapper paymentMapper;
+    private final AuditLogService auditLogService;
+
+    // ở class này ta sẽ sử dụng audit log như sau :
+    // - Khi tạo payment url thành công, ta log "User {userId} created payment for Order {orderId} with Payment ID {paymentId}"
+    // - Khi xử lý callback thành công, ta log "Payment {paymentId} for Order {orderId} completed with status {status}"
+    // - Khi xử lý callback thất bại, ta log "Payment {paymentId} for Order {orderId} failed with status {status}"
 
     @Override
     @Transactional
@@ -69,6 +76,7 @@ public class PaymentServiceImpl implements PaymentService {
         log.info("Payment URL: {}", paymentUrl);
         log.info("===============================");
 
+        auditLogService.log("Payment", "User " + user.getId() + " created payment for Order " + order.getId() + " with Payment ID " + payment.getId());
         return new PaymentUrlResponse(
                 paymentUrl,
                 order.getOrderCode(),
@@ -104,9 +112,11 @@ public class PaymentServiceImpl implements PaymentService {
 
                 order.setStatus(OrderStatus.PAID);
                 order.setPaidAt(LocalDateTime.now());
+                auditLogService.log("Payment", "Payment " + payment.getId() + " for Order " + order.getId() + " completed with status " + payment.getStatus());
             } else {
                 payment.setStatus(PaymentStatus.FAILED);
                 order.setStatus(OrderStatus.PAYMENT_FAILED);
+                auditLogService.log("Payment", "Payment " + payment.getId() + " for Order " + order.getId() + " failed with status " + payment.getStatus());
             }
 
             paymentRepository.save(payment);

@@ -10,6 +10,7 @@ import dev.commerce.exception.InvalidDataException;
 import dev.commerce.exception.UserNotFoundException;
 import dev.commerce.redis.RefreshToken;
 import dev.commerce.repositories.jpa.UserRepository;
+import dev.commerce.services.AuditLogService;
 import dev.commerce.services.RefreshTokenService;
 import dev.commerce.services.AuthenticationService;
 import dev.commerce.services.JwtService;
@@ -35,6 +36,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationUtils utils;
     private final MessageUtils messageUtils;
+    private final AuditLogService auditLogService;
 
     @Override
     public LoginResponse login(LoginRequest request) {
@@ -54,6 +56,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .token(refreshToken)
                 .usersId(user.getId())
                 .build());
+
+        auditLogService.log("User", "User with username " + user.getUsername() + " logged in.");
+
         return LoginResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -80,6 +85,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var user = getUserFromRefreshToken(refresh);
         validateRefreshToken(refresh, user);
         tokenService.deleteByUserId(user.getId());
+        auditLogService.log("User", "User with username " + user.getUsername() + " logged out.");
         return "Logout successful";
     }
 
@@ -94,6 +100,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         
         log.info("Password reset token generated for user: {}", email);
         log.info("Reset token: {}", resetToken);
+        auditLogService.log("User", "User with username " + user.getUsername() + " request reset password.");
 
         return resetToken;
     }
@@ -116,6 +123,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRepository.save(user);
         
         log.info("Password reset successful for user: {}", username);
+        auditLogService.log("User", "User with username " + user.getUsername() + " has reset their password.");
         return messageUtils.toLocale("password.reset.success");
     }
 
@@ -130,6 +138,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
+        auditLogService.log("User", "User with username " + user.getUsername() + " has changed their password.");
         return "Change password successful";
     }
 

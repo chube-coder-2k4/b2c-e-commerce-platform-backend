@@ -6,6 +6,7 @@ import dev.commerce.entitys.Category;
 import dev.commerce.exception.ResourceNotFoundException;
 import dev.commerce.mappers.CategoryMapper;
 import dev.commerce.repositories.jpa.CategoryRepository;
+import dev.commerce.services.AuditLogService;
 import dev.commerce.services.CategoryService;
 import dev.commerce.utils.AuthenticationUtils;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +25,15 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
     private final AuthenticationUtils utils;
+    private final AuditLogService auditLogService;
+
 
     @Override
     public void deleteCategoryById(UUID categoryId) {
         Category cate = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
         cate.setActive(false);
+        auditLogService.log("Category", "User" + utils.getCurrentUser().getUsername() + " deleted category " + cate.getName());
         categoryRepository.save(cate);
     }
 
@@ -59,6 +63,7 @@ public class CategoryServiceImpl implements CategoryService {
         cate.setCreatedBy(utils.getCurrentUserId());
         cate.setActive(true);
         Category savedCate = categoryRepository.save(cate);
+        auditLogService.log("Category", "User " + utils.getCurrentUser().getUsername() + " created category " + savedCate.getName());
         return categoryMapper.entityToDto(savedCate);
     }
 
@@ -71,6 +76,7 @@ public class CategoryServiceImpl implements CategoryService {
         existingCategory.setSlug(request.getSlug() != null ? request.getSlug() : slugify(request.getName()));
         existingCategory.setUpdatedBy(utils.getCurrentUserId());
         Category updatedCategory = categoryRepository.save(existingCategory);
+        auditLogService.log("Category", "User " + utils.getCurrentUser().getUsername() + " updated category " + updatedCategory.getName());
         return categoryMapper.entityToDto(updatedCategory);
     }
 

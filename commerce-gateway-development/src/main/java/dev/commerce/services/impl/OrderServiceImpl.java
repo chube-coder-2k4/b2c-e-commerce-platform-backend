@@ -10,6 +10,7 @@ import dev.commerce.entitys.*;
 import dev.commerce.exception.ResourceNotFoundException;
 import dev.commerce.mappers.OrderMapper;
 import dev.commerce.repositories.jpa.*;
+import dev.commerce.services.AuditLogService;
 import dev.commerce.services.OrderService;
 import dev.commerce.utils.AuthenticationUtils;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,8 @@ public class OrderServiceImpl implements OrderService {
     private final CartItemRepository cartItemRepository;
     private final AuthenticationUtils utils;
     private final SimpMessagingTemplate messagingTemplate;
+    private final AuditLogService auditLogService;
+
 
 
     @Override
@@ -60,7 +63,7 @@ public class OrderServiceImpl implements OrderService {
         cartItemRepository.deleteAll(cartItems);
         cart.setTotalPrice(0.0);
         cartRepository.save(cart);
-
+        auditLogService.log("Order", "User " + user.getUsername() + " created order " + orders.getOrderCode());
         return orderMapper.toOrderDetailResponse(orders,orderItem);
     }
 
@@ -87,6 +90,7 @@ public class OrderServiceImpl implements OrderService {
         orders.setStatus(status);
         orderRepository.save(orders);
         pushOrderStatusToUser(orders);
+        auditLogService.log("Order", "User " + orders.getUsers().getUsername() + " has changed the order status.");
         return orderMapper.toOrderResponse(orders);
     }
 
@@ -95,6 +99,7 @@ public class OrderServiceImpl implements OrderService {
         Orders orders = getOrderById(orderId);
         orders.setStatus(OrderStatus.CANCELLED);
         orderRepository.save(orders);
+        auditLogService.log("Order", "User " + orders.getUsers().getUsername() + " has changed the order status.");
         return orderMapper.toOrderResponse(orders);
 
     }

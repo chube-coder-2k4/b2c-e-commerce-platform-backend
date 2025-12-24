@@ -10,6 +10,7 @@ import dev.commerce.exception.InvalidDataException;
 import dev.commerce.mappers.UsersMapper;
 import dev.commerce.repositories.jpa.RoleRepository;
 import dev.commerce.repositories.jpa.UserRepository;
+import dev.commerce.services.AuditLogService;
 import dev.commerce.services.MailService;
 import dev.commerce.services.OtpVerifyService;
 import dev.commerce.services.UserService;
@@ -41,6 +42,8 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final AuthenticationUtils utils;
     private final UsersMapper usersMapper;
+    private final AuditLogService auditLogService;
+
 
 
     @Override
@@ -63,6 +66,7 @@ public class UserServiceImpl implements UserService {
         otpVerifyService.saveOtp(request.getEmail(), otp);
         mailService.sendOtpMail(savedUser.getEmail(), otp);
         log.info("User created successfully with ID: {}", savedUser.getId());
+        auditLogService.log("User", "User did"+ utils.getCurrentUser().getUsername() +"User created successfully with ID: " + savedUser.getId());
         return savedUser.getId();
     }
 
@@ -83,6 +87,7 @@ public class UserServiceImpl implements UserService {
         user.setUpdatedBy(utils.getCurrentUserId());
         userRepository.save(user);
         log.info("User updated successfully with ID: {}", user.getId());
+        auditLogService.log("User", "User updated successfully with ID: " + user.getId() + " by " + utils.getCurrentUser().getUsername());
         return user.getId();
     }
 
@@ -94,6 +99,7 @@ public class UserServiceImpl implements UserService {
         user.setActive(false);
         userRepository.save(user);
         log.info("User deleted successfully with ID: {}", userId);
+        auditLogService.log("User", "User deleted successfully with ID: " + userId + " by " + utils.getCurrentUser().getUsername());
     }
 
     @Override

@@ -5,7 +5,9 @@ import dev.commerce.dtos.response.RoleResponse;
 import dev.commerce.entitys.Role;
 import dev.commerce.mappers.RoleMapper;
 import dev.commerce.repositories.jpa.RoleRepository;
+import dev.commerce.services.AuditLogService;
 import dev.commerce.services.RoleService;
+import dev.commerce.utils.AuthenticationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,9 @@ import java.util.UUID;
 public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
     private final RoleMapper roleMapper;
+    private final AuditLogService auditLogService;
+    private final AuthenticationUtils authenticationUtils;
+
 
     @Override
     public List<RoleResponse> getAllRoles() {
@@ -28,6 +33,7 @@ public class RoleServiceImpl implements RoleService {
     public RoleResponse createRole(RoleRequest roleRequest) {
         Role role = roleMapper.toEntity(roleRequest);
         Role saved = roleRepository.save(role);
+        auditLogService.log("Role", "User"+ authenticationUtils.getCurrentUser().getUsername() + "Created role " + saved.getName());
         return roleMapper.toResponse(saved);
     }
 
@@ -37,12 +43,14 @@ public class RoleServiceImpl implements RoleService {
         existingRole.setName(role.getName());
         existingRole.setDescription(role.getDescription());
         Role saved = roleRepository.save(existingRole);
+        auditLogService.log("Role", "User"+ authenticationUtils.getCurrentUser().getUsername() + "Updated role " + saved.getName());
         return roleMapper.toResponse(saved);
     }
 
     @Override
     public void deleteRole(UUID id) {
         roleRepository.deleteById(id);
+        auditLogService.log("Role", "User"+ authenticationUtils.getCurrentUser().getUsername() + "Deleted role with id " + id);
     }
 
     @Override

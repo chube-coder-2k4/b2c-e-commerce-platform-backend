@@ -8,6 +8,7 @@ import dev.commerce.exception.ResourceNotFoundException;
 import dev.commerce.mappers.ProductMapper;
 import dev.commerce.repositories.jpa.CategoryRepository;
 import dev.commerce.repositories.jpa.ProductRepository;
+import dev.commerce.services.AuditLogService;
 import dev.commerce.services.ProductService;
 import dev.commerce.utils.AuthenticationUtils;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,8 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private final AuthenticationUtils utils;
     private final CategoryRepository categoryRepository;
+    private final AuditLogService auditLogService;
+
 
     @Override
     public Page<ProductResponse> getAllProducts(String name, BigDecimal priceFrom, BigDecimal priceTo, int page, int size, String sortBy, String sortDir) {
@@ -67,6 +70,7 @@ public class ProductServiceImpl implements ProductService {
             product.setSlug(slugify(product.getName()));
         }
         Product savedProduct = productRepository.save(product);
+        auditLogService.log("Product", "User " + utils.getCurrentUser().getUsername() + " created product " + savedProduct.getName());
         return productMapper.toResponse(savedProduct);
     }
 
@@ -86,6 +90,7 @@ public class ProductServiceImpl implements ProductService {
         product.setCategory(category);
         product.setUpdatedBy(utils.getCurrentUserId());
         Product updatedProduct = productRepository.save(product);
+        auditLogService.log("Product", "User " + utils.getCurrentUser().getUsername() + " updated product " + updatedProduct.getName());
         return productMapper.toResponse(updatedProduct);
     }
 
@@ -96,6 +101,7 @@ public class ProductServiceImpl implements ProductService {
         );
         product.setActive(false);
         productRepository.save(product);
+        auditLogService.log("Product", "User " + utils.getCurrentUser().getUsername() + " deleted product " + product.getName());
     }
 
     private String slugify(String input) {
