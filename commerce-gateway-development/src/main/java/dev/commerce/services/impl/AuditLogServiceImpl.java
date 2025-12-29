@@ -3,6 +3,7 @@ package dev.commerce.services.impl;
 import dev.commerce.dtos.response.AuditLogResponse;
 import dev.commerce.entitys.AuditLog;
 import dev.commerce.entitys.Users;
+import dev.commerce.exception.ResourceNotFoundException;
 import dev.commerce.mappers.AuditLogMapper;
 import dev.commerce.repositories.jpa.AuditLogRepository;
 import dev.commerce.services.AuditLogService;
@@ -27,13 +28,13 @@ public class AuditLogServiceImpl implements AuditLogService {
 
     @Override
     public AuditLogResponse getAuditLogById(UUID id) {
-        AuditLog auditlog = auditLogRepository.findById(id).orElse(null);
-        if(auditlog != null){
-            return auditLogMapper.toAuditLogResponse(auditlog);
-        }
-        else {
-            throw new RuntimeException(messageUtils.toLocale("audit.notfound"));
-        }
+        return auditLogRepository.findById(id)
+                .map(auditLogMapper::toAuditLogResponse)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                messageUtils.toLocale("audit.notfound")
+                        )
+                );
     }
 
     @Override
@@ -63,6 +64,9 @@ public class AuditLogServiceImpl implements AuditLogService {
     @Override
     public void log(String action, String details) {
         Users us = utils.getCurrentUser();
+        if (us == null) {
+            return;
+        }
         AuditLog auditLog = AuditLog.builder()
                 .users(us)
                 .action(action)
