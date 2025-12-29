@@ -12,6 +12,7 @@ public interface AuditLogService {
     List<AuditLogResponse> getAllAuditLogs(String action, LocalDateTime start, LocalDateTime end);
     List<AuditLogResponse> getAuditLogsByUserId(UUID userId);
     void log(String action, String details);
+    void log(UUID userId, String action, String details);
 
 
 }

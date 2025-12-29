@@ -72,4 +72,16 @@ public class AuditLogServiceImpl implements AuditLogService {
         auditLog.setUpdatedBy(us.getId());
         auditLogRepository.save(auditLog);
     }
+
+    @Override
+    public void log(UUID userId, String action, String details) {
+        AuditLog auditLog = AuditLog.builder()
+                .users(userId != null ? Users.builder().id(userId).build() : null)
+                .action(action)
+                .details(details)
+                .build();
+        auditLog.setCreatedBy(userId);
+        auditLog.setUpdatedBy(userId);
+        auditLogRepository.save(auditLog);
+    }
 }

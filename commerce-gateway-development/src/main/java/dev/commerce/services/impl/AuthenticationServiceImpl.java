@@ -57,7 +57,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .usersId(user.getId())
                 .build());
 
-        auditLogService.log("User", "User with username " + user.getUsername() + " logged in.");
+        auditLogService.log(user.getId(), "User", "User with username " + user.getUsername() + " logged in.");
 
         return LoginResponse.builder()
                 .accessToken(accessToken)

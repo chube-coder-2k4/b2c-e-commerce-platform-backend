@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
         otpVerifyService.saveOtp(request.getEmail(), otp);
         mailService.sendOtpMail(savedUser.getEmail(), otp);
         log.info("User created successfully with ID: {}", savedUser.getId());
-        auditLogService.log("User", "User did"+ utils.getCurrentUser().getUsername() +"User created successfully with ID: " + savedUser.getId());
+        auditLogService.log(user.getId(),"User", "User did"+ utils.getCurrentUser().getUsername() +"User created successfully with ID: " + savedUser.getId());
         return savedUser.getId();
     }
 
