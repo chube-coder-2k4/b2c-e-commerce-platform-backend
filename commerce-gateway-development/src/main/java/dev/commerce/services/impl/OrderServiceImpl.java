@@ -16,6 +16,7 @@ import dev.commerce.utils.AuthenticationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -36,6 +37,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
+    @Transactional
     public OrderDetailResponse createOrder(OrderRequest orderRequest) {
         Users user = utils.getCurrentUser();
         Cart cart = cartRepository.findByUsers(user).orElseThrow(() -> new ResourceNotFoundException("Cart is Empty"));

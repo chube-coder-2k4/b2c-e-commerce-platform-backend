@@ -23,6 +23,8 @@ public class Product extends BaseEntity{
     @JoinColumn(name = "category_id")
     private Category category;
     private boolean active = true;
+    @Version
+    private Long version;
 
     @PrePersist
     public void ensureId() {
