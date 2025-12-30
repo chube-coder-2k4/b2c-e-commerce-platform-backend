@@ -33,8 +33,7 @@ public class OrderServiceImpl implements OrderService {
     private final AuthenticationUtils utils;
     private final SimpMessagingTemplate messagingTemplate;
     private final AuditLogService auditLogService;
-
-
+    private final ProductRepository productRepository;
 
     @Override
     @Transactional
@@ -45,6 +44,13 @@ public class OrderServiceImpl implements OrderService {
         if(cartItems.isEmpty()) {
             throw new ResourceNotFoundException("Cart is Empty");
         }
+        for(CartItem ci : cartItems){
+            Product product = productRepository.findById(ci.getProduct().getId()).orElseThrow(() -> new ResourceNotFoundException("Product is Empty"));
+            if(product.getStockQuantity() < ci.getQuantity()){
+                throw new IllegalArgumentException("Product " + product.getName() + " is out of stock");
+            }
+        }
+
         Orders orders = new Orders();
         orders.setUsers(user);
         orders.setOrderCode("ORD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());

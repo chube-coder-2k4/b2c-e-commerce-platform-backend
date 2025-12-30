@@ -5,13 +5,13 @@ import dev.commerce.dtos.common.OrderStatus;
 import dev.commerce.dtos.common.PaymentStatus;
 import dev.commerce.dtos.response.PaymentResponse;
 import dev.commerce.dtos.response.PaymentUrlResponse;
-import dev.commerce.entitys.Orders;
-import dev.commerce.entitys.Payment;
-import dev.commerce.entitys.Users;
+import dev.commerce.entitys.*;
 import dev.commerce.exception.ResourceNotFoundException;
 import dev.commerce.mappers.PaymentMapper;
+import dev.commerce.repositories.jpa.OrderItemRepository;
 import dev.commerce.repositories.jpa.OrderRepository;
 import dev.commerce.repositories.jpa.PaymentRepository;
+import dev.commerce.repositories.jpa.ProductRepository;
 import dev.commerce.services.AuditLogService;
 import dev.commerce.services.PaymentService;
 import dev.commerce.utils.AuthenticationUtils;
@@ -34,6 +34,8 @@ public class PaymentServiceImpl implements PaymentService {
     private final VNPayConfig vnPayConfig;
     private final PaymentMapper paymentMapper;
     private final AuditLogService auditLogService;
+    private final OrderItemRepository orderItemRepository;
+    private final ProductRepository productRepository;
 
     // ở class này ta sẽ sử dụng audit log như sau :
     // - Khi tạo payment url thành công, ta log "User {userId} created payment for Order {orderId} with Payment ID {paymentId}"
@@ -106,6 +108,23 @@ public class PaymentServiceImpl implements PaymentService {
             Orders order = payment.getOrders();
 
             if ("00".equals(responseCode)) {
+                if(payment.getStatus() == PaymentStatus.COMPLETED){
+                    return paymentMapper.toResponse(payment);
+                }
+
+                List<OrderItem> orderItems = orderItemRepository.findByOrders(order);
+                for(OrderItem item : orderItems){
+                    Product product = productRepository.findById(item.getProduct().getId())
+                            .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+                    if(product.getStockQuantity() < item.getQuantity()){
+                        throw new IllegalArgumentException("Insufficient stock for product: " + product.getName());
+                    }
+                    product.setStockQuantity(product.getStockQuantity() - item.getQuantity());
+                    productRepository.save(product);
+                }
+
+
+
                 payment.setStatus(PaymentStatus.COMPLETED);
                 payment.setTransactionId(transactionNo);
                 payment.setPaidAt(LocalDateTime.now());
