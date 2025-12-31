@@ -35,7 +35,6 @@ public class VNPayUtil {
         cld.add(Calendar.MINUTE, 15);
         vnp_Params.put("vnp_ExpireDate", formatter.format(cld.getTime()));
 
-        // Logic same VNPayController mẫu
         String queryUrl = hashAllFields(vnp_Params);
         String vnp_SecureHash = hmacSHA512(config.getHashSecret(), queryUrl);
 

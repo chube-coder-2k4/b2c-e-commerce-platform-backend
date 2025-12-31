@@ -37,11 +37,6 @@ public class PaymentServiceImpl implements PaymentService {
     private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
 
-    // ở class này ta sẽ sử dụng audit log như sau :
-    // - Khi tạo payment url thành công, ta log "User {userId} created payment for Order {orderId} with Payment ID {paymentId}"
-    // - Khi xử lý callback thành công, ta log "Payment {paymentId} for Order {orderId} completed with status {status}"
-    // - Khi xử lý callback thất bại, ta log "Payment {paymentId} for Order {orderId} failed with status {status}"
-
     @Override
     @Transactional
     public PaymentUrlResponse createPaymentUrl(UUID orderId) {
@@ -49,17 +44,14 @@ public class PaymentServiceImpl implements PaymentService {
         Orders order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
-        // Kiểm tra order thuộc về user hiện tại
         if (!order.getUsers().getId().equals(user.getId())) {
             throw new IllegalArgumentException("You are not authorized to pay for this order");
         }
 
-        // Kiểm tra trạng thái order
         if (order.getStatus() != OrderStatus.PENDING) {
             throw new IllegalArgumentException("Order is not in pending status");
         }
 
-        // Tạo payment record
         Payment payment = Payment.builder()
                 .orders(order)
                 .provider(order.getPaymentMethod())
@@ -69,7 +61,6 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setCreatedBy(user.getId());
         paymentRepository.save(payment);
 
-        // Tạo VNPay URL - SỬ DỤNG buildPaymentUrl từ VNPayUtil
         String paymentUrl = VNPayUtil.buildPaymentUrl(payment.getId(), order.getTotalAmount(), vnPayConfig);
 
         log.info("=== VNPAY PAYMENT URL DEBUG ===");
@@ -78,7 +69,8 @@ public class PaymentServiceImpl implements PaymentService {
         log.info("Payment URL: {}", paymentUrl);
         log.info("===============================");
 
-        auditLogService.log("Payment", "User " + user.getId() + " created payment for Order " + order.getId() + " with Payment ID " + payment.getId());
+        auditLogService.log(user.getId() ,"Payment", "User " + user.getId() + " created payment for Order " + order.getId() + " with Payment ID " + payment.getId());
+
         return new PaymentUrlResponse(
                 paymentUrl,
                 order.getOrderCode(),
