@@ -1,0 +1,282 @@
+{
+  "info": {
+    "name": "Commerce Gateway - Full API Collection",
+    "description": "Postman collection to test all APIs in this project. Variables: baseUrl, token, refreshToken",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8085" },
+    { "key": "token", "value": "" },
+    { "key": "refreshToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/login", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","login"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "x-refresh-token", "value": "{{refreshToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/refresh-token", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","refresh-token"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-refresh-token", "value": "{{refreshToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/logout", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","logout"] }
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"user@example.com\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/forgot-password", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","forgot-password"] }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"secretKey\": \"<reset-token>\",\n  \"newPassword\": \"newPass123\",\n  \"confirmPassword\": \"newPass123\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/reset-password", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","reset-password"] }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"secretKey\": \"<secret-key>\",\n  \"newPassword\": \"newPass123\",\n  \"confirmPassword\": \"newPass123\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/change-password", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","change-password"] }
+          }
+        },
+        {
+          "name": "Verify OTP",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"user@example.com\",\n  \"otp\": \"123456\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/verify-otp", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","verify-otp"] }
+          }
+        },
+        {
+          "name": "Resend OTP",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"user@example.com\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/resend-otp", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","resend-otp"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Test User\",\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"0987654321\",\n  \"address\": \"123 Street\",\n  \"role\": [\"USER\"],\n  \"username\": \"testuser\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/v1/users/register", "host": ["{{baseUrl}}"], "path": ["api","v1","users","register"] }
+          }
+        },
+        {
+          "name": "Search Users (admin)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"page\":0,\n  \"size\":10\n}" },
+            "url": { "raw": "{{baseUrl}}/api/v1/users/search", "host": ["{{baseUrl}}"], "path": ["api","v1","users","search"] }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/v1/users/me", "host": ["{{baseUrl}}"], "path": ["api","v1","users","me"] }
+          }
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Updated Name\",\n  \"address\": \"New Address\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/v1/users/me", "host": ["{{baseUrl}}"], "path": ["api","v1","users","me"] }
+          }
+        },
+        {
+          "name": "Admin - Get User By ID",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/v1/users/<userId>", "host": ["{{baseUrl}}"], "path": ["api","v1","users","<userId>"] }
+          }
+        },
+        {
+          "name": "Admin - Update User",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Admin Updated\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/v1/users/<userId>", "host": ["{{baseUrl}}"], "path": ["api","v1","users","<userId>"] }
+          }
+        },
+        {
+          "name": "Admin - Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/v1/users/<userId>", "host": ["{{baseUrl}}"], "path": ["api","v1","users","<userId>"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Roles",
+      "item": [
+        { "name": "Get All Roles", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/v1/roles/all", "host": ["{{baseUrl}}"], "path": ["api","v1","roles","all"] } },
+        { "name": "Get Role By ID", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/v1/roles/<roleId>", "host": ["{{baseUrl}}"], "path": ["api","v1","roles","<roleId>"] } },
+        { "name": "Create Role", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "body": { "mode": "raw", "raw": "{\n  \"name\": \"ROLE_MANAGER\"\n}" }, "url": { "raw": "{{baseUrl}}/api/v1/roles/", "host": ["{{baseUrl}}"], "path": ["api","v1","roles",""] } },
+        { "name": "Update Role", "request": { "method": "PUT", "header": [ { "key": "Content-Type", "value": "application/json" } ], "body": { "mode": "raw", "raw": "{\n  \"name\": \"ROLE_UPDATED\"\n}" }, "url": { "raw": "{{baseUrl}}/api/v1/roles/<roleId>", "host": ["{{baseUrl}}"], "path": ["api","v1","roles","<roleId>"] } },
+        { "name": "Delete Role", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/api/v1/roles/<roleId>", "host": ["{{baseUrl}}"], "path": ["api","v1","roles","<roleId>"] } }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        { "name": "Search Products", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": { "raw": "{{baseUrl}}/api/v1/products/search?name=phone&page=0&size=10", "host": ["{{baseUrl}}"], "path": ["api","v1","products","search"], "query": [ { "key": "name", "value": "phone" }, { "key": "page", "value": "0" }, { "key": "size", "value": "10" } ] } } ,
+        { "name": "Get Product By ID", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/v1/products/<productId>", "host": ["{{baseUrl}}"], "path": ["api","v1","products","<productId>"] } } ,
+        { "name": "Create Product", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Sample Product\",\n  \"description\": \"Nice product\",\n  \"price\": 199.99,\n  \"categoryId\": \"00000000-0000-0000-0000-000000000000\"\n}" }, "url": { "raw": "{{baseUrl}}/api/v1/products", "host": ["{{baseUrl}}"], "path": ["api","v1","products"] } } ,
+        { "name": "Update Product", "request": { "method": "PUT", "header": [ { "key": "Content-Type", "value": "application/json" } ], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Updated Product\",\n  \"price\": 149.99\n}" }, "url": { "raw": "{{baseUrl}}/api/v1/products/<productId>", "host": ["{{baseUrl}}"], "path": ["api","v1","products","<productId>"] } } ,
+        { "name": "Delete Product", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/api/v1/products/<productId>", "host": ["{{baseUrl}}"], "path": ["api","v1","products","<productId>"] } }
+      ]
+    },
+    {
+      "name": "Product Images",
+      "item": [
+        {
+          "name": "Upload Product Image",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": "path/to/image.jpg" },
+                { "key": "isPrimary", "type": "text", "value": "true" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/products/<productId>/images", "host": ["{{baseUrl}}"], "path": ["products","<productId>","images"] }
+          }
+        },
+        { "name": "Delete Product Image", "request": { "method": "DELETE", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/products/<productId>/images/<imageId>", "host": ["{{baseUrl}}"], "path": ["products","<productId>","images","<imageId>"] } } ,
+        { "name": "Set Primary Image", "request": { "method": "PUT", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/products/<productId>/images/<imageId>/primary", "host": ["{{baseUrl}}"], "path": ["products","<productId>","images","<imageId>","primary"] } }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        { "name": "List Categories", "request": { "method": "POST", "url": { "raw": "{{baseUrl}}/api/v1/categories/list?page=0&size=10", "host": ["{{baseUrl}}"], "path": ["api","v1","categories","list"], "query": [ { "key": "page", "value": "0" }, { "key": "size", "value": "10" } ] } },
+        { "name": "Get Category By ID", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/v1/categories/<categoryId>", "host": ["{{baseUrl}}"], "path": ["api","v1","categories","<categoryId>"] } },
+        { "name": "Create Category", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "body": { "mode": "raw", "raw": "{\n  \"name\": \"New Category\",\n  \"description\": \"Category description\"\n}" }, "url": { "raw": "{{baseUrl}}/api/v1/categories", "host": ["{{baseUrl}}"], "path": ["api","v1","categories"] } },
+        { "name": "Update Category", "request": { "method": "PUT", "header": [ { "key": "Content-Type", "value": "application/json" } ], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Updated Category\"\n}" }, "url": { "raw": "{{baseUrl}}/api/v1/categories/<categoryId>", "host": ["{{baseUrl}}"], "path": ["api","v1","categories","<categoryId>"] } },
+        { "name": "Delete Category", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/api/v1/categories/<categoryId>", "host": ["{{baseUrl}}"], "path": ["api","v1","categories","<categoryId>"] } }
+      ]
+    },
+    {
+      "name": "Cart",
+      "item": [
+        { "name": "Add To Cart", "request": { "method": "POST", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/api/v1/cart?productId=<productId>&quantity=1", "host": ["{{baseUrl}}"], "path": ["api","v1","cart"], "query": [ { "key": "productId", "value": "<productId>" }, { "key": "quantity", "value": "1" } ] } },
+        { "name": "Get My Cart", "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/api/v1/cart/my-cart", "host": ["{{baseUrl}}"], "path": ["api","v1","cart","my-cart"] } },
+        { "name": "Clear Cart", "request": { "method": "POST", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/api/v1/cart/clear", "host": ["{{baseUrl}}"], "path": ["api","v1","cart","clear"] } },
+        { "name": "Update Quantity", "request": { "method": "PUT", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/api/v1/cart/update-quantity?cartItemId=<cartItemId>&newQty=2", "host": ["{{baseUrl}}"], "path": ["api","v1","cart","update-quantity"], "query": [ { "key": "cartItemId", "value": "<cartItemId>" }, { "key": "newQty", "value": "2" } ] } },
+        { "name": "Remove Item", "request": { "method": "DELETE", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/api/v1/cart/remove-item?cartItemId=<cartItemId>", "host": ["{{baseUrl}}"], "path": ["api","v1","cart","remove-item"], "query": [ { "key": "cartItemId", "value": "<cartItemId>" } ] } }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        { "name": "Create Order", "request": { "method": "POST", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ], "body": { "mode": "raw", "raw": "{\n  \"shippingAddress\": \"123 Street\",\n  \"paymentMethod\": \"VNPAY\"\n}" }, "url": { "raw": "{{baseUrl}}/api/v1/order", "host": ["{{baseUrl}}"], "path": ["api","v1","order"] } } },
+        { "name": "Get My Orders", "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/api/v1/order/user", "host": ["{{baseUrl}}"], "path": ["api","v1","order","user"] } } },
+        { "name": "Get All Orders (admin)", "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/api/v1/order/all", "host": ["{{baseUrl}}"], "path": ["api","v1","order","all"] } } },
+        { "name": "Get Order Details", "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/api/v1/order/<orderId>", "host": ["{{baseUrl}}"], "path": ["api","v1","order","<orderId>"] } } },
+        { "name": "Update Order Status", "request": { "method": "PUT", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/api/v1/order/<orderId>/status?status=COMPLETED", "host": ["{{baseUrl}}"], "path": ["api","v1","order","<orderId>","status"], "query": [ { "key": "status", "value": "COMPLETED" } ] } } },
+        { "name": "Cancel Order", "request": { "method": "PUT", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/api/v1/order/<orderId>/cancel", "host": ["{{baseUrl}}"], "path": ["api","v1","order","<orderId>","cancel"] } } }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        { "name": "Create Payment URL for Order", "request": { "method": "POST", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/api/v1/payments/create/<orderId>", "host": ["{{baseUrl}}"], "path": ["api","v1","payments","create","<orderId>"] } } },
+        { "name": "VNPay Callback (simulate)", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/v1/payments/vnpay-callback?vnp_TxnRef=...&vnp_TransactionStatus=00&vnp_SecureHash=...", "host": ["{{baseUrl}}"], "path": ["api","v1","payments","vnpay-callback"], "query": [ { "key": "vnp_TxnRef", "value": "..." }, { "key": "vnp_TransactionStatus", "value": "00" }, { "key": "vnp_SecureHash", "value": "..." } ] } } ,
+        { "name": "Get My Payments", "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/api/v1/payments/my-payments", "host": ["{{baseUrl}}"], "path": ["api","v1","payments","my-payments"] } } },
+        { "name": "Get Payment Details", "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/api/v1/payments/<paymentId>", "host": ["{{baseUrl}}"], "path": ["api","v1","payments","<paymentId>"] } } }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        { "name": "Get My Notifications", "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/api/v1/notification/my-notifications", "host": ["{{baseUrl}}"], "path": ["api","v1","notification","my-notifications"] } } },
+        { "name": "Mark All As Read", "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/api/v1/notification/mark-as-read-all", "host": ["{{baseUrl}}"], "path": ["api","v1","notification","mark-as-read-all"] } } },
+        { "name": "Mark As Read (single)", "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/api/v1/notification/mark-as-read?notificationIds=<id>", "host": ["{{baseUrl}}"], "path": ["api","v1","notification","mark-as-read"], "query": [ { "key": "notificationIds", "value": "<id>" } ] } } },
+        { "name": "Delete All Notifications", "request": { "method": "DELETE", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/api/v1/notification/all-notifications", "host": ["{{baseUrl}}"], "path": ["api","v1","notification","all-notifications"] } } },
+        { "name": "Delete Notification", "request": { "method": "DELETE", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/api/v1/notification/notification?notificationIds=<id>", "host": ["{{baseUrl}}"], "path": ["api","v1","notification","notification"], "query": [ { "key": "notificationIds", "value": "<id>" } ] } } }
+      ]
+    },
+    {
+      "name": "VNPay (Direct)",
+      "item": [
+        {
+          "name": "Create VNPay Payment (direct)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/x-www-form-urlencoded" } ],
+            "body": { "mode": "urlencoded", "urlencoded": [ { "key": "amount", "value": "500" }, { "key": "bankCode", "value": "NCB" }, { "key": "language", "value": "vn" } ] },
+            "url": { "raw": "{{baseUrl}}/vnpay/create-payment", "host": ["{{baseUrl}}"], "path": ["vnpay","create-payment"] }
+          }
+        },
+        { "name": "VNPay Return (simulate)", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/vnpay/return?vnp_TxnRef=...&vnp_TransactionStatus=00&vnp_SecureHash=...", "host": ["{{baseUrl}}"], "path": ["vnpay","return"] } } },
+        { "name": "VNPay IPN (simulate)", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/x-www-form-urlencoded" } ], "body": { "mode": "urlencoded", "urlencoded": [ { "key": "vnp_TxnRef", "value": "..." }, { "key": "vnp_TransactionStatus", "value": "00" }, { "key": "vnp_SecureHash", "value": "..." } ] }, "url": { "raw": "{{baseUrl}}/vnpay/ipn", "host": ["{{baseUrl}}"], "path": ["vnpay","ipn"] } } }
+      ]
+    },
+    {
+      "name": "Views",
+      "item": [
+        { "name": "Payment Success Page (view)", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/payment-success", "host": ["{{baseUrl}}"], "path": ["payment-success"] } } },
+        { "name": "Payment Failed Page (view)", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/payment-failed", "host": ["{{baseUrl}}"], "path": ["payment-failed"] } } }
+      ]
+    }
+  ]
+}
+
