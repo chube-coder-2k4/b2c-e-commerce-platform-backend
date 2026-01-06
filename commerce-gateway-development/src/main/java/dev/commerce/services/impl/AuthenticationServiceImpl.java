@@ -118,6 +118,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (!jwtService.isTokenValid(request.getToken(), user, TokenType.RESET_PASSWORD)) {
             throw new InvalidDataException(messageUtils.toLocale("invalid.or.expired.reset.password.token"));
         }
+        if(!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new InvalidDataException(messageUtils.toLocale("new.password.confirm.password.not.match"));
+        }
         
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);

@@ -36,15 +36,6 @@ public class RedisConfig {
     private int redisPort;
 
     @Bean
-    public JedisConnectionFactory jedisConnectionFactory() {
-        log.info("Connecting to Redis at {}:{}", redisHost, redisPort);
-        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-        config.setHostName(redisHost);
-        config.setPort(redisPort);
-        return new JedisConnectionFactory(config);
-    }
-
-    @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         return new LettuceConnectionFactory();
     }
@@ -53,18 +44,15 @@ public class RedisConfig {
     public RedisTemplate<String, Object> redisTemplate() {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory());
-
-        template.setKeySerializer(new StringRedisSerializer()); // Sử dụng StringRedisSerializer để tuần tự hóa khóa dưới dạng chuỗi
-        template.setHashKeySerializer(new StringRedisSerializer()); // Sử dụng StringRedisSerializer để tuần tự hóa khóa băm dưới dạng chuỗi
-        template.setValueSerializer(new GenericJackson2JsonRedisSerializer()); // Sử dụng GenericJackson2JsonRedisSerializer để tuần tự hóa giá trị dưới dạng JSON
-        template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer()); // Sử dụng GenericJackson2JsonRedisSerializer để tuần tự hóa giá trị băm dưới dạng JSON
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
         template.afterPropertiesSet();
-
-
         log.info("Connected to Redis at {}:{}", redisHost, redisPort);
         log.info("Redis is connected successfully.");
         return template;
-    } // this method redisTemplate này có nhiệm vụ là cung cấp một giao diện để tương tác với Redis, cho phép thực hiện các thao tác như lưu trữ, truy xuất và xóa dữ liệu trong Redis thông qua các phương thức của RedisTemplate
+    }
 
     @Bean
     public ObjectMapper objectMapper() {
@@ -74,7 +62,7 @@ public class RedisConfig {
         module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ISO_DATE_TIME));
         mapper.registerModule(module);
         return mapper;
-    } // this method objectmapper này có nhiệm vụ là chuyển đổi các đối tượng LocalDateTime sang định dạng chuỗi ISO_DATE_TIME khi lưu trữ vào Redis và ngược lại khi lấy dữ liệu từ Redis
+    }
 
     @Bean
     public RedisCacheConfiguration cacheConfiguration() {
@@ -94,12 +82,12 @@ public class RedisConfig {
                                 serializer
                         )
                 );
-    } // this method cacheConfiguration này có nhiệm vụ là cung cấp cấu hình mặc định cho caching trong Redis, bao gồm các thiết lập như thời gian hết hạn của cache, cách thức tuần tự hóa dữ liệu, v.v.
+    }
 
     @Bean
     public RedisCacheManager cacheManager() {
         return RedisCacheManager.builder(redisConnectionFactory())
                 .cacheDefaults(cacheConfiguration())
                 .build();
-    } // this method cacheManager này có nhiệm vụ là quản lý các cache trong ứng dụng, bao gồm việc tạo, xóa và truy xuất các cache dựa trên cấu hình được cung cấp
+    }
 }

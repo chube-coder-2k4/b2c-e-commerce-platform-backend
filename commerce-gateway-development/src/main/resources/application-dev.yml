@@ -38,9 +38,11 @@ spring:
     password: ${MAIL_PASSWORD}
     properties:
       mail.smtp.auth: true
-      mail.smtp.starttls.enable: true: true
+      mail.smtp.starttls.enable: true
       mail.smtp.ssl.trust: smtp.gmail.com
     from: ${MAIL_FROM}
+
+
   security:
     oauth2:
       client:
