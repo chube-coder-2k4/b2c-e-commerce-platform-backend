@@ -22,7 +22,13 @@ public class GlobalHandlerException {
         e.setStatus(INTERNAL_SERVER_ERROR.value());
         e.setError(INTERNAL_SERVER_ERROR.getReasonPhrase());
         e.setPath(request.getContextPath());
-        return e;
+        return ErrorResponse.builder()
+                .timestamp(e.getTimestamp())
+                .status(e.getStatus())
+                .path(e.getPath())
+                .error(e.getError())
+                .message(e.getMessage())
+                .build();
     }
 
     @ExceptionHandler({ResourceNotFoundException.class, UserNotFoundException.class})
